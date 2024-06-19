@@ -1,35 +1,47 @@
 # first player : king 
-# secound player : king + tour 
-
-
-import matplotlib.pyplot as plt
-import numpy as np
-
+# secound player : king + rook + rook
 class Board:
     def __init__(self):
-        self.board = self.init_board()
+        self.board = [[' ' for _ in range(8)] for _ in range(8)]
+        self.pieces = []
 
-    def init_board(self):
-        # Initialize the board with the initial positions of the pieces
-        board = [
-            ['r', 'n', 'b', 'q', 'k', 'b', 'n', 'r'],  # Black pieces
-            ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'],  # Black pawns
-            ['.', '.', '.', '.', '.', '.', '.', '.'],  # Empty squares
-            ['.', '.', '.', '.', '.', '.', '.', '.'],  # Empty squares
-            ['.', '.', '.', '.', '.', '.', '.', '.'],  # Empty squares
-            ['.', '.', '.', '.', '.', '.', '.', '.'],  # Empty squares
-            ['P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'],  # White pawns
-            ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R']   # White pieces
-        ]
-        return board
 
-    def display_board(self):
-        # Display the board in a readable format
+    def add_piece(self, piece, position):
+        x, y = position
+        if self.check_empty(position):
+            self.board[x][y] = piece
+            self.pieces.append(piece)
+            piece.position = position
+        else:
+            return False
+
+
+    def move_piece(self, piece, new_position):
+        x, y = piece.position
+        self.board[x][y] = ' '
+        nx, ny = new_position
+        self.board[nx][ny] = piece
+        piece.position = new_position
+
+
+    def get_piece_at(self, position):
+        x, y = position
+        return self.board[x][y]
+
+
+    def remeve_piece(self, position):
+        x, y = position
+        self.board[x][y] = ' '
+
+
+    def print_board(self):
         for row in self.board:
-            print(' '.join(row))
+            print(' '.join([str(piece) if piece != ' ' else '.' for piece in row]))
+        print()
 
-
-
-# Example usage
-chess_board = Board()
-chess_board.display_board()
+    def check_empty(self, position):
+        x, y = position
+        if self.board[x][y] == ' ':
+            return True
+        else:
+            return False
