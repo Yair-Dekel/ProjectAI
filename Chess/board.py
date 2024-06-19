@@ -55,3 +55,6 @@ class Board:
 chess_board = Board()
 chess_board.display_board()
 chess_board.display_board_graphically()
+
+
+#   pip install matplotlib
