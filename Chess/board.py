@@ -1,3 +1,7 @@
+# first player : king 
+# secound player : king + tour 
+
+
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -25,36 +29,7 @@ class Board:
             print(' '.join(row))
 
 
-    
-    def display_board_graphically(self):
-        fig, ax = plt.subplots()
-        ax.set_xticks(np.arange(8) + 0.5, minor=False)
-        ax.set_yticks(np.arange(8) + 0.5, minor=False)
-        ax.invert_yaxis()
-        ax.xaxis.tick_top()
-
-        board_colors = np.array([[1, 0] * 4, [0, 1] * 4] * 4)
-        ax.imshow(board_colors, cmap='gray', interpolation='none')
-
-        piece_to_unicode = {
-            'r': '\u265C', 'n': '\u265E', 'b': '\u265D', 'q': '\u265B', 'k': '\u265A', 'p': '\u265F',
-            'R': '\u2656', 'N': '\u2658', 'B': '\u2657', 'Q': '\u2655', 'K': '\u2654', 'P': '\u2659'
-        }
-
-        for i in range(8):
-            for j in range(8):
-                piece = self.board[i][j]
-                if piece != '.':
-                    ax.text(j, i, piece_to_unicode[piece], fontsize=24, ha='center', va='center', color='black' if piece.islower() else 'white')
-
-        ax.set_xticklabels([])
-        ax.set_yticklabels([])
-        plt.show()
 
 # Example usage
 chess_board = Board()
 chess_board.display_board()
-chess_board.display_board_graphically()
-
-
-#   pip install matplotlib
