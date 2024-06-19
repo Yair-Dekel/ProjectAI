@@ -2,8 +2,12 @@
 from piece import Piece
 
 class Rook(Piece):
+
+    def objective_function(self):
+        moves = self.possible_moves(self.board)
+           
     
-    
+
     def possible_moves(self, board):
         x, y = self.position
         moves = []

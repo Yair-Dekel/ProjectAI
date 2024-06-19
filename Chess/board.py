@@ -1,9 +1,13 @@
 # first player : king 
 # secound player : king + rook + rook
+
+from rx.subject import Subject
+
 class Board:
     def __init__(self):
         self.board = [[' ' for _ in range(8)] for _ in range(8)]
         self.pieces = []
+        self.state_changed = Subject()  # Observable subject for state changes
 
 
     def add_piece(self, piece, position):
@@ -12,6 +16,7 @@ class Board:
             self.board[x][y] = piece
             self.pieces.append(piece)
             piece.position = position
+            self.state_changed.on_next(self)
         else:
             return False
 
@@ -22,6 +27,7 @@ class Board:
         nx, ny = new_position
         self.board[nx][ny] = piece
         piece.position = new_position
+        self.state_changed.on_next(self)
 
 
     def get_piece_at(self, position):
@@ -45,3 +51,5 @@ class Board:
             return True
         else:
             return False
+
+

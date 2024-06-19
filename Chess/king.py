@@ -1,6 +1,9 @@
 from piece import Piece
 
 class King(Piece):
+    
+
+    
     def possible_moves(self, board):
         x, y = self.position
         moves = []
@@ -16,6 +19,8 @@ class King(Piece):
                     target = board.get_piece_at((nx, ny))
                     if target == ' ' or target.color != self.color:
                         moves.append((nx, ny))
+        
+
         return moves
 
     

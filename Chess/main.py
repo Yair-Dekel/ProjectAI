@@ -8,10 +8,10 @@ chess_board = Board()
 
 pieces = []
 # Create a white king and a white rook
-pieces.append(King('black', "King"))
-pieces.append(King('white', "King"))
-pieces.append(Rook('white', "Rook"))
-pieces.append(Rook('white', "Rook"))
+pieces.append(King('black', "King", chess_board))
+pieces.append(King('white', "King", chess_board))
+pieces.append(Rook('white', "Rook", chess_board))
+pieces.append(Rook('white', "Rook", chess_board))
 
 
 # Place the king and rook on the board
@@ -24,6 +24,13 @@ for piece in pieces:
 
 # Print the initial board setup
 chess_board.print_board()
+
+#print()
+
+#hess_board.remeve_piece(pieces[0].get_position())
+
+#pieces[1].print_my_board()
+
 
 # Show possible moves for the king and the rook
 for piece in pieces:
