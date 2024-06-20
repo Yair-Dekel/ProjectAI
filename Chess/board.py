@@ -9,6 +9,13 @@ class Board:
         self.pieces = []
         self.state_changed = Subject()  # Observable subject for state changes
 
+    def get_king(self, color):
+        for piece in self.pieces:
+            if  piece.type == "King": 
+                if piece.color == color:
+                    return piece.position
+
+             
 
     def add_piece(self, piece, position):
         x, y = position
