@@ -30,5 +30,11 @@ class Piece:
     def possible_moves(self, board):
         raise NotImplementedError
 
+    # Copy constructor method
+    def copy(self):
+        new_piece = Piece(self.color, self.type, self.board)
+        new_piece.position = self.position  # Assuming position is a simple tuple, otherwise use copy.deepcopy
+        return new_piece
+    
     def __str__(self):
         raise NotImplementedError

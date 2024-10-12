@@ -25,17 +25,38 @@ for piece in pieces:
 # Print the initial board setup
 chess_board.print_board()
 
-#print()
+for piece in pieces:
+    print(piece.position)
+
+print(' ')
 
 #hess_board.remeve_piece(pieces[0].get_position())
 
 #pieces[1].print_my_board()
 
+# get the best move for the white (by the objective functions)
+
+rook1_move, rook1_value = pieces[2].objective_function()
+rook2_move, rook2_value = pieces[3].objective_function()
+white_king_move, white_king_value = pieces[1].objective_function()
+
+for piece in pieces:
+    print(piece.position)
+
+# move the pieces with the highest value
+if rook1_value >= rook2_value and rook1_value >= white_king_value:
+    chess_board.move_piece(pieces[2], rook1_move)
+elif rook2_value >= rook1_value and rook2_value >= white_king_value:
+    chess_board.move_piece(pieces[3], rook2_move)
+else:
+    chess_board.move_piece(pieces[1], white_king_move)
+
+chess_board.print_board()
+
 
 # Show possible moves for the king and the rook
 for piece in pieces:
-    print(piece.possible_moves(chess_board))
+    print(piece.position)
 
 
-for piece in pieces:
-    print(piece.get_position()) 
+
