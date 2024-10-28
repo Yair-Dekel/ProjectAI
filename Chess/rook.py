@@ -1,6 +1,7 @@
 
 from piece import Piece
 import math
+import copy
 
 class Rook(Piece):
 
@@ -70,16 +71,24 @@ class Rook(Piece):
                 
                 if too_close:
                     objective[move] = 0
-        
+
+            
             new_board = self.board.pseudo_copy()
             new_rook = new_board.get_piece_at(self.position)
+
+            #new_rook = copy.deepcopy(new_board.get_piece_at(self.position))
+
             new_board.move_piece(new_rook, move)
+
             minimal_king_layer = new_rook.search_minimal_king_layer(new_board, layers)
             if minimal_king_layer is not None:
                 if minimal_king_layer > layer_of_king:
-                    objective[move] += 20
+                    objective[move] += 200
+                elif minimal_king_layer == layer_of_king:
+                    objective[move] += 0
+                else:
+                    objective[move] -= 5
 
-            print(self.position)
         #return the move with the highest objective value
         return max(objective, key=objective.get), objective[max(objective, key=objective.get)]
 

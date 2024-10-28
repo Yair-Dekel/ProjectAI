@@ -51,13 +51,13 @@ class King(Piece):
         return moves
     
     def objective_function(self):
-        layers = self.board.make_layers()
+        layers = self.board.make_layers().copy()
         moves = self.possible_moves(self.board)
 
-        for layer in layers:
-            for position in layer:
-                if position not in moves:
-                    layer.remove(position)
+        layers = [[position for position in layer if position in moves] for layer in layers]
+
+        print(f'after: {layers}')
+        
         #return random move in the minimal layer
         for layer in layers:
             if layer:

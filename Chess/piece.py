@@ -31,8 +31,8 @@ class Piece:
         raise NotImplementedError
 
     # Copy constructor method
-    def copy(self):
-        new_piece = Piece(self.color, self.type, self.board)
+    def pseudo_copy(self, board):
+        new_piece = self.__class__(self.color, self.type, board)
         new_piece.position = self.position  # Assuming position is a simple tuple, otherwise use copy.deepcopy
         return new_piece
     

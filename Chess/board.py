@@ -47,6 +47,8 @@ class Board:
         x, y = piece.position
         self.board[x][y] = ' '
         nx, ny = new_position
+        if self.board[nx][ny] != ' ':
+            self.remeve_piece(new_position)
         self.board[nx][ny] = piece
         piece.position = new_position
         self.state_changed.on_next(self)
@@ -89,7 +91,9 @@ class Board:
         new_board.board = [row[:] for row in self.board]
         
         # Shallow copy the pieces (assuming pieces can be shallow copied)
-        new_board.pieces = self.pieces[:]  # No deep copy of pieces, just copying references
+        #new_board.pieces = self.pieces[:]  # No deep copy of pieces, just copying references
+        for piece in self.pieces:
+            new_board.pieces.append(piece.pseudo_copy(new_board))
         
         # Shallow copy the layers
         new_board.layers = self.layers[:]
