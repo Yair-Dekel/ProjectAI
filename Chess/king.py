@@ -27,7 +27,7 @@ class King(Piece):
                     impossible_moves.extend(enemy_king_moves)
                 else:
                     # For other enemy pieces, collect their possible moves
-                    for move in piece.possible_moves(board):
+                    for move in piece.threat_places(board):
                         impossible_moves.append(move)
         
         for dx in [-1, 0, 1]:

@@ -102,5 +102,32 @@ class Board:
         new_board.state_changed = Subject()  # Reinitialize a fresh Subject
 
         return new_board
+    
+    def is_in_check(self, color):
+        king_position = self.get_king(color)
+        for piece in self.pieces:
+            if piece.color != color:
+                if king_position in piece.possible_moves(self):
+                    return True
+        return False
+    
+    def is_in_checkmate(self, color):
+        king_position = self.get_king(color)
+        king = self.get_piece_at(king_position)
+        if not self.is_in_check(color):
+            return False
+        possible_moves = king.possible_moves(self)
+        possible_moves.append(king_position)
+
+        threaten_places = []
+
+        for piece in self.pieces:
+            if piece.color != color:
+                if hasattr(piece, 'threat_places'):
+                    threaten_places.extend(piece.threat_places(self))
+                elif hasattr(piece, 'possible_moves'):
+                    threaten_places.extend(piece.possible_moves(self))
+        return all(move in threaten_places for move in possible_moves)     # Check if every move in possible_moves is in threaten_moves
+
 
 

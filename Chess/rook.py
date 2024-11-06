@@ -22,16 +22,21 @@ class Rook(Piece):
         checkmate = False
         blocking_way = False
         too_close = False
-        check_value = 10
+        check_value = 1
 
-
+        king_x ,king_y = king_position
         objective = {}
 
         for move in moves:
-            objective[move] = 0
+            if abs(king_x - self.position[0]) == 1 and abs(king_y - self.position[1]) == 1:
+                objective[move] = 500
+            else:
+                objective[move] = 0
 
 
-        king_x ,king_y = king_position
+        
+        # if the king threating the rook
+        
 
 
         for move in moves:
@@ -85,9 +90,11 @@ class Rook(Piece):
                 if minimal_king_layer > layer_of_king:
                     objective[move] += 200
                 elif minimal_king_layer == layer_of_king:
-                    objective[move] += 0
+                    objective[move] += 5
                 else:
                     objective[move] -= 5
+            if new_board.is_in_checkmate(self.color):
+                objective[move] += 1000
 
         #return the move with the highest objective value
         return max(objective, key=objective.get), objective[max(objective, key=objective.get)]
@@ -148,6 +155,27 @@ class Rook(Piece):
                 elif target.color != self.color:
                     moves.append((nx, ny))
                     break
+                else:
+                    break
+                nx, ny = nx + dx, ny + dy
+
+        return moves
+    
+    def threat_places(self, board):
+        x, y = self.position
+        moves = []
+        # Vertical and horizontal moves
+        directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+        for dx, dy in directions:
+            nx, ny = x + dx, y + dy
+            while 0 <= nx < 8 and 0 <= ny < 8:
+                target = board.get_piece_at((nx, ny))
+                if target == None:
+                    moves.append((nx, ny))
+                elif target.color != self.color:
+                    moves.append((nx, ny))
+                    if target.type != "King":
+                        break
                 else:
                     break
                 nx, ny = nx + dx, ny + dy

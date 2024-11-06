@@ -3,23 +3,27 @@ from king import King
 from rook import Rook
 import random
 
+while True:
 # Create a new board
-chess_board = Board()
+    chess_board = Board()
 
-pieces = []
-# Create a white king and a white rook
-pieces.append(King('black', "King", chess_board))
-pieces.append(King('white', "King", chess_board))
-pieces.append(Rook('white', "Rook", chess_board))
-pieces.append(Rook('white', "Rook", chess_board))
+    pieces = []
+    # Create a white king and a white rook
+    pieces.append(King('black', "King", chess_board))
+    pieces.append(King('white', "King", chess_board))
+    pieces.append(Rook('white', "Rook", chess_board))
+    pieces.append(Rook('white', "Rook", chess_board))
 
 
-# Place the king and rook on the board
-for piece in pieces:
-    position = (random.randint(0, 7), random.randint(0, 7))
-    while not chess_board.check_empty(position):
-        position = (random.randint(0, 7), random.randint(0, 7)) 
-    chess_board.add_piece(piece, position)
+    # Place the king and rook on the board
+    for piece in pieces:
+        position = (random.randint(0, 7), random.randint(0, 7))
+        while not chess_board.check_empty(position):
+            position = (random.randint(0, 7), random.randint(0, 7)) 
+        chess_board.add_piece(piece, position)
+    
+    if not chess_board.is_in_check('black'):
+        break
 
 
 # Print the initial board setup
