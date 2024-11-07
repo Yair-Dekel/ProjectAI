@@ -67,14 +67,10 @@ for i in range(10):
     print(pieces[0].possible_moves(chess_board))
     print(pieces[1].possible_moves(chess_board))
 
+    if len(pieces[0].possible_moves(chess_board)) == 0:
+        print('White wins')
+        break
+
     white_turn = not white_turn
-
-
-# Show possible moves for the king and the rook
-for piece in pieces:
-    print(piece.position)
-
-print(pieces[0].possible_moves(chess_board))
-
 
 
