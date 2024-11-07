@@ -169,10 +169,8 @@ class Rook(Piece):
 
             new_rook_possible_moves = new_rook.threat_places(new_board)
 
-            for move in new_rook_possible_moves:
-                if abs(move[0] - king_x) > 1 or abs(move[1] - king_y) > 1:
-                    new_rook_possible_moves.remove(move)
 
+            new_rook_possible_moves = [move for move in new_rook_possible_moves if abs(move[0] - king_x) <= 1 and abs(move[1] - king_y) <= 1]
             #intersection between the possible moves of the king and the rook
             #intersection = [move for move in new_rook_possible_moves if move in possible_king_moves]
             layers_division = self.board.make_layers() 
