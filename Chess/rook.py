@@ -177,15 +177,16 @@ class Rook(Piece):
             #intersection = [move for move in new_rook_possible_moves if move in possible_king_moves]
             layers_division = self.board.make_layers() 
 
-
-
             #keep only the moves that are in the intersection
             layers_division = [[position for position in layer if position in new_rook_possible_moves] for layer in layers_division]
 
+            score = 0
             for i, layer in enumerate(layers_division):
-                objective[move] += (4-i)**2 * len(layer)*layer_constant
-            
-            
+                score += (4-i)**2 * len(layer)*layer_constant
+            objective[move] += score
+
+            objective[move] += score-current_score
+
             distance = 0
 
             distance = abs(x - king_x) + abs(y - king_y)

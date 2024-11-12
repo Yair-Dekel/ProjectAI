@@ -55,8 +55,6 @@ class King(Piece):
         moves = self.possible_moves(self.board)
 
         layers = [[position for position in layer if position in moves] for layer in layers]
-
-        print(f'after: {layers}')
         
         #return random move in the minimal layer
         for layer in layers:
