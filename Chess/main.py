@@ -41,7 +41,7 @@ print(' ')
 
 white_turn = True
 
-for i in range(10):
+for i in range(16):
     if white_turn:
         rook1_move, rook1_value = pieces[2].objective_function()
         rook2_move, rook2_value = pieces[3].objective_function()

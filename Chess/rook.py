@@ -144,6 +144,8 @@ class Rook(Piece):
         threat = False
         check_value = 1
         threat_value = 50
+        layer_constant = 1
+        decrease_moves_constant = 10
 
         objective = {}
         if self.position in possible_king_moves:
@@ -181,15 +183,24 @@ class Rook(Piece):
             layers_division = [[position for position in layer if position in new_rook_possible_moves] for layer in layers_division]
 
             for i, layer in enumerate(layers_division):
-                objective[move] += (4-i)**2 * len(layer)
+                objective[move] += (4-i)**2 * len(layer)*layer_constant
             
             
             distance = 0
 
             distance = abs(x - king_x) + abs(y - king_y)
-            distance = math.floor(math.log(distance, 2)) if distance != 0 else 0
+            #distance = math.floor(math.log(distance, 2)) if distance != 0 else 0
             objective[move] += distance
             
+            new_king = new_board.get_piece_at(king_position)
+            new_king_possible_moves = new_king.possible_moves(new_board)
+
+            if len(possible_king_moves) > len(new_king_possible_moves):
+                objective[move] += (len(possible_king_moves) - len(new_king_possible_moves))*decrease_moves_constant
+            
+            #minimal_king_layer = new_rook.search_minimal_king_layer(new_board, layers)
+            #if minimal_king_layer > layer_of_king:
+            #    objective[move] += 20
                        
             if new_board.is_in_checkmate('black'):
                 objective[move] += 1000
