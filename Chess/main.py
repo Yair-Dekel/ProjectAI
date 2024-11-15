@@ -74,6 +74,8 @@ games = 50
 number_of_moves = 30
 winning = 0
 
+positions = []
+
 for j in range(games):
     while True:
     # Create a new board
@@ -95,9 +97,16 @@ for j in range(games):
             chess_board.add_piece(piece, position)
         
         if not chess_board.is_in_check('black'):
+            pieces_positions = []
+            for piece in pieces:
+                pieces_positions.append(piece.get_position())
+            positions.append(pieces_positions)
             break
 
     white_turn = True
+
+    chess_board.print_board()
+    print(' ')
 
     for i in range(number_of_moves):
         if white_turn:
@@ -120,6 +129,7 @@ for j in range(games):
 
 
         if len(pieces[0].possible_moves(chess_board)) == 0:
+            print('White wins')
             winning += 1
             break
 
@@ -138,10 +148,10 @@ king_white = King('white', "King", chess_board)
 rook_1 = Rook('white', "Rook", chess_board)
 rook_2 = Rook('white', "Rook", chess_board)
 
-chess_board.add_piece(king_black, (3, 2))
-chess_board.add_piece(king_white, (6, 6))
-chess_board.add_piece(rook_1, (0, 1))
-chess_board.add_piece(rook_2, (6, 3))
+chess_board.add_piece(king_black, (3, 4))
+chess_board.add_piece(king_white, (2, 1))
+chess_board.add_piece(rook_1, (1, 0))
+chess_board.add_piece(rook_2, (1, 2))
 
 chess_board.print_board()
 
