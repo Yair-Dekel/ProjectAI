@@ -132,7 +132,16 @@ class Rook(Piece):
         layer_of_king = self.find_king_layer(king_position, layers)
 
         threat_places = self.cuurent_threat()
+
+        #keep the threat places by layers
         layers = [[position for position in layer if position in threat_places] for layer in layers]
+        
+        #find the other rook which is not the self rook
+        other_rook = [piece for piece in self.board.pieces if piece.type == "Rook" and piece.color == self.color and piece != self][0]
+        other_rook_position = other_rook.possible_moves(self.board)
+        
+        #exclude the other rook from the layers
+        same_line = [[position for position in layer if position not in other_rook_position] for layer in layers]
         current_score = 0
         for i, layer in enumerate(layers):
             current_score += (4-i)**2 * len(layer)
@@ -159,6 +168,7 @@ class Rook(Piece):
         king_x ,king_y = king_position   
 
         for move in moves:
+            #create a new board and move the rook to the new position
             new_board = self.board.pseudo_copy()
             new_rook = new_board.get_piece_at(self.position)
             new_board.move_piece(new_rook, move)
@@ -171,13 +181,14 @@ class Rook(Piece):
 
             new_rook_possible_moves = new_rook.threat_places(new_board)
 
-
+            #keep only the moves that are threatening the king
             new_rook_possible_moves = [move for move in new_rook_possible_moves if abs(move[0] - king_x) <= 1 and abs(move[1] - king_y) <= 1]
             #intersection between the possible moves of the king and the rook
             #intersection = [move for move in new_rook_possible_moves if move in possible_king_moves]
             layers_division = self.board.make_layers() 
 
-            #keep only the moves that are in the intersection
+            #keep only the moves that are in the intersection, 
+            #meaning the moves that are threatening the king by layers
             layers_division = [[position for position in layer if position in new_rook_possible_moves] for layer in layers_division]
 
             score = 0
@@ -186,6 +197,14 @@ class Rook(Piece):
             objective[move] += score
 
             objective[move] += score-current_score
+
+            #
+            same_line2 = [[position for position in layer if position not in other_rook_position] for layer in layers_division]
+            
+            #if same line is empty then the rook are in the same line
+            #check if same line is empty
+            if all(len(same_line_layer) == 0 for same_line_layer in same_line2):
+                objective[move] -= score  
 
             distance = 0
 

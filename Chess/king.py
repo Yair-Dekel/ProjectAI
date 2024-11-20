@@ -10,6 +10,11 @@ class King(Piece):
         moves = []
         impossible_moves = []
 
+        pieces_positions = []
+        for piece in board.pieces:
+            if piece.color != self.color:
+                pieces_positions.append(piece.get_position())
+
         # Collect all impossible moves (attacked squares) from enemy pieces
         for piece in board.pieces:
             if piece.color != self.color:
@@ -22,7 +27,7 @@ class King(Piece):
                                 continue
                             ex, ey = piece.position
                             nx, ny = ex + dx, ey + dy
-                            if 0 <= nx < 8 and 0 <= ny < 8:
+                            if 0 <= nx < 8 and 0 <= ny < 8 and (nx, ny) not in pieces_positions:
                                 enemy_king_moves.append((nx, ny))
                     impossible_moves.extend(enemy_king_moves)
                 else:

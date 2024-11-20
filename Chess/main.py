@@ -140,21 +140,3 @@ print(f'White wins {winning} out of {games} games, with {number_of_moves} moves 
 print(f'{winning/games*100}%')
 
 
-
-chess_board = Board()
-
-king_black = King('black', "King", chess_board)
-king_white = King('white', "King", chess_board)
-rook_1 = Rook('white', "Rook", chess_board)
-rook_2 = Rook('white', "Rook", chess_board)
-
-chess_board.add_piece(king_black, (3, 4))
-chess_board.add_piece(king_white, (2, 1))
-chess_board.add_piece(rook_1, (1, 0))
-chess_board.add_piece(rook_2, (1, 2))
-
-chess_board.print_board()
-
-rook1_move, rook1_value = rook_1.objective_function()
-rook2_move, rook2_value = rook_2.objective_function()
-white_king_move, white_king_value = king_white.objective_function()
