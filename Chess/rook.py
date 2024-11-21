@@ -154,7 +154,7 @@ class Rook(Piece):
         check_value = 1
         threat_value = 69
         layer_constant = 1
-        decrease_moves_constant = 10
+        decrease_moves_constant = 5
 
         objective = {}
         if self.position in possible_king_moves:
@@ -215,8 +215,12 @@ class Rook(Piece):
             new_king = new_board.get_piece_at(king_position)
             new_king_possible_moves = new_king.possible_moves(new_board)
 
+            add_king_position = 0
+            if king_position in new_rook_possible_moves:
+                add_king_position = 1
+
             if len(possible_king_moves) > len(new_king_possible_moves):
-                objective[move] += (len(possible_king_moves) - len(new_king_possible_moves))*decrease_moves_constant
+                objective[move] += (len(possible_king_moves) + add_king_position - len(new_king_possible_moves))*decrease_moves_constant
             
             #minimal_king_layer = new_rook.search_minimal_king_layer(new_board, layers)
             #if minimal_king_layer > layer_of_king:
