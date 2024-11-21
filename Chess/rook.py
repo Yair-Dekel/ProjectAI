@@ -152,7 +152,7 @@ class Rook(Piece):
         too_close = False
         threat = False
         check_value = 1
-        threat_value = 66
+        threat_value = 69
         layer_constant = 1
         decrease_moves_constant = 10
 

@@ -76,6 +76,8 @@ winning = 0
 
 positions = []
 
+boards = []
+
 for j in range(games):
     while True:
     # Create a new board
@@ -105,9 +107,10 @@ for j in range(games):
 
     white_turn = True
 
-    chess_board.print_board()
-    print(' ')
-
+    #chess_board.print_board()
+    #print(' ')
+    boards.append(chess_board)
+    
     for i in range(number_of_moves):
         if white_turn:
             rook1_move, rook1_value = pieces[2].objective_function()
@@ -129,11 +132,18 @@ for j in range(games):
 
 
         if len(pieces[0].possible_moves(chess_board)) == 0:
-            print('White wins')
+            #print('White wins')
+            boards.pop()
             winning += 1
             break
 
         white_turn = not white_turn
+
+for board in boards:
+    board.print_board()
+    print(' ')
+
+print(f'len of boards: {len(boards)}')
 
 print(f'White wins {winning} out of {games} games, with {number_of_moves} moves each')
 # Print the final board setup
