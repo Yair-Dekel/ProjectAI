@@ -73,6 +73,7 @@ for i in range(16):
 games = 50
 number_of_moves = 30
 winning = 0
+draw = 0
 
 positions = []
 
@@ -110,7 +111,7 @@ for j in range(games):
     #chess_board.print_board()
     #print(' ')
     boards.append(chess_board)
-    
+
     for i in range(number_of_moves):
         if white_turn:
             rook1_move, rook1_value = pieces[2].objective_function()
@@ -129,12 +130,17 @@ for j in range(games):
 
             black_king_move, black_king_value = pieces[0].objective_function()
             chess_board.move_piece(pieces[0], black_king_move)
+            if len(chess_board.pieces) < 4:
+                break
 
 
         if len(pieces[0].possible_moves(chess_board)) == 0:
             #print('White wins')
+            if chess_board.is_in_checkmate('black'):
+                winning += 1
+            else:
+                draw += 1
             boards.pop()
-            winning += 1
             break
 
         white_turn = not white_turn
@@ -148,5 +154,8 @@ print(f'len of boards: {len(boards)}')
 print(f'White wins {winning} out of {games} games, with {number_of_moves} moves each')
 # Print the final board setup
 print(f'{winning/games*100}%')
+
+print(f'draw = {draw} \n{draw/games*100}%')
+print(f'total = {winning + draw} \n{(winning + draw)/games*100}%')
 
 
