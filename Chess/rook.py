@@ -5,6 +5,13 @@ import copy
 
 class Rook(Piece):
 
+    def __init__(self, color, type, board, threat_val=69, decrease_moves_val=5):
+        # Call the parent class constructor
+        super().__init__(color, 'Rook', board)
+        # Add any rook-specific attributes here if needed
+        self.threat_value = threat_val
+        self.decrease_moves_constant = decrease_moves_val
+
     def search_for_king(self):
         oposite_color = 'black' if self.color == 'white' else 'white'
         return self.board.get_king(oposite_color)
@@ -152,9 +159,9 @@ class Rook(Piece):
         too_close = False
         threat = False
         check_value = 1
-        threat_value = 69
+        threat_value = self.threat_value
         layer_constant = 1
-        decrease_moves_constant = 5
+        decrease_moves_constant = self.decrease_moves_constant
 
         objective = {}
         if self.position in possible_king_moves:
