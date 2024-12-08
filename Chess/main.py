@@ -78,7 +78,7 @@ draw = 0
 positions = []
 
 boards = []
-
+'''
 for j in range(games):
     while True:
     # Create a new board
@@ -158,4 +158,4 @@ print(f'{winning/games*100}%')
 print(f'draw = {draw} \n{draw/games*100}%')
 print(f'total = {winning + draw} \n{(winning + draw)/games*100}%')
 
-
+'''

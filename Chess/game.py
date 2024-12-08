@@ -37,8 +37,8 @@ class Game:
     
 
     def start(self, chess_board, pieces):
+        white_turn = True
         for i in range(self.turns):
-
             if white_turn:  # white turn
                 rook1_move, rook1_value = pieces[2].objective_function()
                 rook2_move, rook2_value = pieces[3].objective_function()
@@ -56,16 +56,19 @@ class Game:
 
                 black_king_move, black_king_value = pieces[0].objective_function()
                 chess_board.move_piece(pieces[0], black_king_move)
+                if len(chess_board.pieces) < 4:
+                    return "lose"
 
-            chess_board.print_board()
-            print(' ')
+            #chess_board.print_board()
+            #print(' ')
 
             if len(pieces[0].possible_moves(chess_board)) == 0:
-                print('White wins')
-                break
-
+                if not chess_board.is_in_check('black'):
+                    return "draw"
+                return "win"
+            
             white_turn = not white_turn
-                    
+        return "lose"        
 
 
     def __repr__(self):
