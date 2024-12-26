@@ -129,5 +129,8 @@ class Board:
                     threaten_places.extend(piece.possible_moves(self))
         return all(move in threaten_places for move in possible_moves)     # Check if every move in possible_moves is in threaten_moves
 
-
+    def print_to_file(self, file):
+        for row in self.board:
+            file.write(' '.join([str(piece) if piece != ' ' else '.' for piece in row]) + '\n')
+        file.write('\n')
 

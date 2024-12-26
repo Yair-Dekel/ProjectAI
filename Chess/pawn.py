@@ -9,7 +9,7 @@ class Pawn(Piece):
         x, y = self.position
         moves = []
         
-        if self.color == 'white':
+        if self.color == 'white' and x < 7 and x > 0:
             if x == 6:
                 if board.check_empty((x - 1, y)):
                     moves.append((x - 1, y))
@@ -28,38 +28,58 @@ class Pawn(Piece):
                         moves.append((x - 1, y + 1))
             
         else:
-            if x == 1:
-                if board.check_empty((x + 1, y)):
-                    moves.append((x + 1, y))
-                    if board.check_empty((x + 2, y)):
-                        moves.append((x + 2, y))
-            else:
-                if board.check_empty((x + 1, y)):
-                    moves.append((x + 1, y))
-            if y > 0:
-                if not board.check_empty((x + 1, y - 1)):
-                    if board.get_piece_at((x + 1, y - 1)).color != self.color:
-                        moves.append((x + 1, y - 1))
-            if y < 7:
-                if not board.check_empty((x + 1, y + 1)):
-                    if board.get_piece_at((x + 1, y + 1)).color != self.color:
-                        moves.append((x + 1, y + 1))
-            
+            if x < 7 and x > 0:
+                if x == 1:
+                    if board.check_empty((x + 1, y)):
+                        moves.append((x + 1, y))
+                        if board.check_empty((x + 2, y)):
+                            moves.append((x + 2, y))
+                else:
+                    if board.check_empty((x + 1, y)):
+                        moves.append((x + 1, y))
+                if y > 0:
+                    if not board.check_empty((x + 1, y - 1)):
+                        if board.get_piece_at((x + 1, y - 1)).color != self.color:
+                            moves.append((x + 1, y - 1))
+                if y < 7:
+                    if not board.check_empty((x + 1, y + 1)):
+                        if board.get_piece_at((x + 1, y + 1)).color != self.color:
+                            moves.append((x + 1, y + 1))
+                
         return moves
     
     def objective_function(self):
+        for piece in self.board.pieces:
+            if piece.type == "King" and piece.color != self.color:
+                black_king = piece
+            if piece.type == "King" and piece.color == self.color:
+                white_king = piece
+        black_king_moves = black_king.possible_moves(self.board)
+        white_king_moves = white_king.possible_moves(self.board)
         moves = self.possible_moves(self.board)
         if len(moves) == 0:
-            return None, -1
+            return None, 1000
         
-        best_move = moves[0]
-        best_value = -1
+        x_king, y_king = black_king.position
+        x_pawn, y_pawn = self.position
 
+        cost = {}
+        defence_value = 2
+        threat_value = 1
+        initial_cost = 10
+        move_away_value = 8
         for move in moves:
-            new_board = self.board.pseudo_copy()
-            new_board.move_piece(self, move)
-            value = self.evaluate_board(new_board)
-            if value > best_value:
-                best_value = value
-                best_move = move
-        return best_move, best_value
+            x, y = move
+            cost[move] = initial_cost
+            if move in white_king_moves:
+                cost[move] -= defence_value
+            if move in black_king_moves:
+                cost[move] += threat_value
+            if abs(x - x_king) + abs(y - y_king) > abs(x_pawn - x_king) + abs(y_pawn - y_king):
+                cost[move] -= move_away_value
+
+        return min(cost, key=cost.get), cost[min(cost, key=cost.get)]
+
+
+    def __str__(self):
+        return 'P' if self.color == 'white' else 'p'
