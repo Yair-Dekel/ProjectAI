@@ -7,10 +7,16 @@ import sys
 if __name__ == '__main__':
 
     iterations = 100
+    moves = 30
     if len(sys.argv) > 1:
         iterations = int(sys.argv[1])
+        if len(sys.argv) > 2:
+            moves = int(sys.argv[2])
+        
     wins = 0
     loses = 0
+    board_list = []
+    board_start = []
     for i in range(iterations):
         # Create a new board
         chess_board = Board()
@@ -43,11 +49,12 @@ if __name__ == '__main__':
 
         # Print the initial board setup
         #chess_board.print_board()
+        board_list.append(chess_board)
 
-
+        board_start.append(chess_board.board)
         white_turn = True
 
-        for i in range(30):
+        for i in range(moves):
             if white_turn:
                 pawn_move, pawn_value = pieces[2].objective_function()
                 white_king_move, white_king_value = pieces[1].objective_function_white()
@@ -68,18 +75,33 @@ if __name__ == '__main__':
             if len(chess_board.pieces) < 3:
                 #print('black wins')
                 loses += 1
+                #board_list.append(chess_board)
                 break
             pawn_pos_x, pawn_pos_y = pieces[2].position
 
             if pawn_pos_x == 0:
                 #print('white wins')
                 wins += 1
+                board_list.pop()
+                board_start.pop()
                 break
 
 
             white_turn = not white_turn
-            if i == 29:
+            if i == moves - 1:
                 loses += 1
+                #board_list.append(chess_board)
     
     print(f'White wins: {wins} times {wins/iterations*100}%')
     print(f'Black wins: {loses} times {loses/iterations*100}%')
+
+    with open("output.txt", "w") as file: 
+        for chess_board in board_list:
+            chess_board.print_to_file(file)
+            file.write('\n')
+    
+    with open("output_start.txt", "w") as file: 
+        for board in board_start:
+            for row in board:
+                file.write(' '.join([str(piece) if piece != ' ' else '.' for piece in row]) + '\n')
+            file.write('\n')
