@@ -100,6 +100,7 @@ class King(Piece):
         return min(score, key=score.get), 0
     
     def objective_function_white(self):
+        pawn_protected = 0
         for piece in self.board.pieces:
             if piece.type == "Pawn":
                 pawn = piece
@@ -113,13 +114,14 @@ class King(Piece):
         moves = [move for move in moves if move not in king_moves]
         if pawn.position in moves:
             moves.remove(pawn.position)
+            pawn_protected = 3
 
         x_pawn, y_pawn = pawn.position
         score = {}
         for move in moves:
             x, y = move
             score[move] = min(abs(x - x_pawn) + abs(y - y_pawn - 1), abs(x - x_pawn) + abs(y - y_pawn + 1))
-
+            score[move] += pawn_protected
         return min(score, key=score.get), min(score.values())
 
     def objective_function(self):

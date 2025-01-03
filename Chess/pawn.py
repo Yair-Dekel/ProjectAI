@@ -63,6 +63,12 @@ class Pawn(Piece):
         x_king, y_king = black_king.position
         x_pawn, y_pawn = self.position
 
+        # check if the pawn cannot be captured by the king
+        if x_pawn < x_king and x_pawn > 0 and (x_pawn - 1, y_pawn) in moves:
+            return (x_pawn - 1, y_pawn), 0
+        if (y_king < y_pawn - x_pawn - 1 or y_king > y_pawn + x_pawn + 1) and (x_pawn - 1, y_pawn) in moves:
+            return (x_pawn - 1, y_pawn), 0
+
         cost = {}
         defence_value = 2
         threat_value = 1
