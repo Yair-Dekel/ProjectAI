@@ -15,9 +15,9 @@ pieces.append(Pawn('white', "Pawn", chess_board))
 
 
 # Place the king and rook on the board
-chess_board.add_piece(pieces[0], (3, 5))
-chess_board.add_piece(pieces[1], (5, 7))
-chess_board.add_piece(pieces[2], (6, 6))
+chess_board.add_piece(pieces[0], (3, 7))
+chess_board.add_piece(pieces[1], (7, 5))
+chess_board.add_piece(pieces[2], (6, 4))
 
 # Print the initial board setup
 chess_board.print_board()

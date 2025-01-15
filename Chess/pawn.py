@@ -60,29 +60,32 @@ class Pawn(Piece):
         if len(moves) == 0:
             return None, 1000
         
-        x_king, y_king = black_king.position
+        x_b_king, y_b_king = black_king.position
+        x_w_king, y_w_king = white_king.position
         x_pawn, y_pawn = self.position
 
-        # check if the pawn cannot be captured by the king
-        if x_pawn < x_king and x_pawn > 0 and (x_pawn - 1, y_pawn) in moves:
+        # check if the pawn cannot be captured by the king by no means
+        if x_pawn < x_b_king and x_pawn > 0 and (x_pawn - 1, y_pawn) in moves:
             return (x_pawn - 1, y_pawn), 0
-        if (y_king < y_pawn - x_pawn - 1 or y_king > y_pawn + x_pawn + 1) and (x_pawn - 1, y_pawn) in moves:
+        if (y_b_king < y_pawn - x_pawn - 1 or y_b_king > y_pawn + x_pawn + 1) and (x_pawn - 1, y_pawn) in moves:
             return (x_pawn - 1, y_pawn), 0
 
         cost = {}
         defence_value = 2
         threat_value = 1
-        initial_cost = 10
+        initial_cost = 2
         move_away_value = 8
         for move in moves:
             x, y = move
             cost[move] = initial_cost
-            if move in white_king_moves:
+            #if move in white_king_moves:
+            #    cost[move] -= defence_value
+            #if move in black_king_moves:
+            #    cost[move] += threat_value
+            #if abs(x - x_king) + abs(y - y_king) > abs(x_pawn - x_king) + abs(y_pawn - y_king):
+            #    cost[move] -= move_away_value
+            if abs(x-x_b_king) <= 1 and abs(y-y_b_king) <= 1:
                 cost[move] -= defence_value
-            if move in black_king_moves:
-                cost[move] += threat_value
-            if abs(x - x_king) + abs(y - y_king) > abs(x_pawn - x_king) + abs(y_pawn - y_king):
-                cost[move] -= move_away_value
 
         return min(cost, key=cost.get), cost[min(cost, key=cost.get)]
 

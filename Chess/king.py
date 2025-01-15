@@ -96,6 +96,10 @@ class King(Piece):
         for move in moves:
             x, y = move
             score[move] = (x - x_pawn - 1) ** 2 + (y - y_pawn) ** 2
+        
+        # if moves is empty, throw an exception
+        if not score:
+            raise Exception("No possible moves")
 
         return min(score, key=score.get), 0
     
