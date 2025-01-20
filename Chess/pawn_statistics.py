@@ -20,6 +20,8 @@ if __name__ == '__main__':
     exceptions = 0
     board_list = []
     board_start = []
+    output = ""
+
     j=0
     #for i in range(iterations):
     while j < iterations:
@@ -63,10 +65,10 @@ if __name__ == '__main__':
             # this is exception case which the black king need one more step to reach the pawn
             if not (abs(x_b_k-x_p) == abs(y_b_k-y_p) and max(abs(x_w_k - x_p), abs(y_w_k - y_p)) - 2 == abs(x_b_k - x_p)):
                 continue
-        
-        with open("all_boards.txt", "a") as file: 
-            chess_board.print_to_file(file)
-            file.write('\n')
+        if j < 100:
+            with open("all_boards.txt", "a") as file: 
+                chess_board.print_to_file(file)
+                file.write('\n')
             
         # Print the initial board setup
         #chess_board.print_board()

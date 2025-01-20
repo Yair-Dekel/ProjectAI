@@ -72,7 +72,7 @@ class Pawn(Piece):
 
         cost = {}
         defence_value = 2
-        threat_value = 1
+        threat_value = 16
         initial_cost = 2
         move_away_value = 8
         for move in moves:
@@ -84,8 +84,10 @@ class Pawn(Piece):
             #    cost[move] += threat_value
             #if abs(x - x_king) + abs(y - y_king) > abs(x_pawn - x_king) + abs(y_pawn - y_king):
             #    cost[move] -= move_away_value
-            if abs(x-x_b_king) <= 1 and abs(y-y_b_king) <= 1:
+            if abs(x-x_w_king) <= 1 and abs(y-y_w_king) <= 1:
                 cost[move] -= defence_value
+            if min(abs(x-x_b_king), abs(y-y_b_king)) <= min(abs(x-x_w_king), abs(y-y_w_king)):
+                cost[move] += threat_value
 
         return min(cost, key=cost.get), cost[min(cost, key=cost.get)]
 

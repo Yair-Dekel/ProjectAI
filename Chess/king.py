@@ -121,11 +121,19 @@ class King(Piece):
             pawn_protected = 3
 
         x_pawn, y_pawn = pawn.position
+        x_king, y_king = self.position
+        distance_from_pawn_side = min(abs(x_king - x_pawn)+abs(y_king - y_pawn-1), abs(x_king - x_pawn)+abs(y_king - y_pawn+1))
         score = {}
         for move in moves:
             x, y = move
+            
             score[move] = min(abs(x - x_pawn) + abs(y - y_pawn - 1), abs(x - x_pawn) + abs(y - y_pawn + 1))
             score[move] += pawn_protected
+            if distance_from_pawn_side == 0:
+                score[move] += 16
+            if abs(x-x_pawn) <= 1 and abs(y-y_pawn) <= 1:
+                score[move] -= 2
+
         return min(score, key=score.get), min(score.values())
 
     def objective_function(self):

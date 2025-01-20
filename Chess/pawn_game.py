@@ -15,9 +15,9 @@ pieces.append(Pawn('white', "Pawn", chess_board))
 
 
 # Place the king and rook on the board
-chess_board.add_piece(pieces[0], (3, 7))
-chess_board.add_piece(pieces[1], (7, 5))
-chess_board.add_piece(pieces[2], (6, 4))
+chess_board.add_piece(pieces[0], (4, 5))
+chess_board.add_piece(pieces[1], (6, 6))
+chess_board.add_piece(pieces[2], (6, 7))
 
 # Print the initial board setup
 chess_board.print_board()
@@ -89,7 +89,7 @@ while not chess_board.check_empty(position_pawn):
     if x_b_k + 1 == x_p and abs(y_b_k - y_p) == 1:
         position_pawn = position_black_king
 chess_board.add_piece(pieces[2], position_pawn)
-
+'''
 # Print the initial board setup
 chess_board.print_board()
 
@@ -125,3 +125,4 @@ for i in range(30):
 
 
     white_turn = not white_turn
+'''
