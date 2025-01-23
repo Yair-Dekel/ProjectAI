@@ -95,7 +95,7 @@ class King(Piece):
             return pawn.position, 0
         for move in moves:
             x, y = move
-            score[move] = (x - x_pawn - 1) ** 2 + (y - y_pawn) ** 2
+            score[move] = (x - (x_pawn - 1)) ** 2 + (y - y_pawn) ** 2
         
         # if moves is empty, throw an exception
         if not score:
@@ -122,7 +122,7 @@ class King(Piece):
 
         x_pawn, y_pawn = pawn.position
         x_king, y_king = self.position
-        distance_from_pawn_side = min(abs(x_king - x_pawn)+abs(y_king - y_pawn-1), abs(x_king - x_pawn)+abs(y_king - y_pawn+1))
+        distance_from_pawn_side = min(abs(x_king - x_pawn)+abs(y_king - (y_pawn-1)), abs(x_king - x_pawn)+abs(y_king - (y_pawn+1)))
         score = {}
         for move in moves:
             x, y = move

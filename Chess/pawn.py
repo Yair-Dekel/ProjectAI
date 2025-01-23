@@ -86,7 +86,7 @@ class Pawn(Piece):
             #    cost[move] -= move_away_value
             if abs(x-x_w_king) <= 1 and abs(y-y_w_king) <= 1:
                 cost[move] -= defence_value
-            if min(abs(x-x_b_king), abs(y-y_b_king)) <= min(abs(x-x_w_king), abs(y-y_w_king)):
+            elif max(abs(x-x_b_king), abs(y-y_b_king)) <= max(abs(x-x_w_king), abs(y-y_w_king)):
                 cost[move] += threat_value
 
         return min(cost, key=cost.get), cost[min(cost, key=cost.get)]

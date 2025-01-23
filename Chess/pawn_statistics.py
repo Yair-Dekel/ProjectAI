@@ -57,7 +57,8 @@ if __name__ == '__main__':
         # the pawn out of the range of the black king - the white always wins
         if x_p < x_b_k:
             continue
-        if y_b_k < y_p - x_p - 1 or y_b_k > y_p + x_p + 1:
+        #if y_b_k < y_p - x_p - 1 or y_b_k > y_p + x_p + 1:
+        if y_b_k < y_p - x_p or y_b_k > y_p + x_p:
             continue
 
         # the black king closer to the pawn so the black always wins
@@ -83,7 +84,7 @@ if __name__ == '__main__':
                     white_king_move, white_king_value = pieces[1].objective_function_white()
 
                     # move the pieces with the lowest value
-                    if pawn_value < white_king_value:
+                    if pawn_value <= white_king_value:
                         chess_board.move_piece(pieces[2], pawn_move)
                     else:
                         chess_board.move_piece(pieces[1], white_king_move)

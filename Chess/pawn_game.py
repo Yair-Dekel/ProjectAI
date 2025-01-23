@@ -15,9 +15,12 @@ pieces.append(Pawn('white', "Pawn", chess_board))
 
 
 # Place the king and rook on the board
-chess_board.add_piece(pieces[0], (4, 5))
-chess_board.add_piece(pieces[1], (6, 6))
-chess_board.add_piece(pieces[2], (6, 7))
+chess_board.add_piece(pieces[0], (4, 3))
+chess_board.add_piece(pieces[1], (2, 4))
+chess_board.add_piece(pieces[2], (3, 3))
+# (1, 5))
+# (4, 2))
+# (6, 6))
 
 # Print the initial board setup
 chess_board.print_board()
@@ -35,7 +38,7 @@ for i in range(30):
         white_king_move, white_king_value = pieces[1].objective_function_white()
 
         # move the pieces with the highest value
-        if pawn_value < white_king_value:
+        if pawn_value <= white_king_value:
             chess_board.move_piece(pieces[2], pawn_move)
         else:
             chess_board.move_piece(pieces[1], white_king_move)
