@@ -1,4 +1,8 @@
 from piece import Piece
+DEFENCE_VALUE = 2
+THREAT_VALUE = 16
+INITIAL_COST = 2
+MAX_RETURN = 1000
 
 class Pawn(Piece):
 
@@ -58,7 +62,7 @@ class Pawn(Piece):
         white_king_moves = white_king.possible_moves(self.board)
         moves = self.possible_moves(self.board)
         if len(moves) == 0:
-            return None, 1000
+            return None, MAX_RETURN
         
         x_b_king, y_b_king = black_king.position
         x_w_king, y_w_king = white_king.position
@@ -71,9 +75,9 @@ class Pawn(Piece):
             return (x_pawn - 1, y_pawn), 0
 
         cost = {}
-        defence_value = 2
-        threat_value = 16
-        initial_cost = 2
+        defence_value = DEFENCE_VALUE
+        threat_value = THREAT_VALUE
+        initial_cost = INITIAL_COST
         move_away_value = 8
         for move in moves:
             x, y = move
@@ -86,7 +90,7 @@ class Pawn(Piece):
             #    cost[move] -= move_away_value
             if abs(x-x_w_king) <= 1 and abs(y-y_w_king) <= 1:
                 cost[move] -= defence_value
-            elif max(abs(x-x_b_king), abs(y-y_b_king)) <= max(abs(x-x_w_king), abs(y-y_w_king)):
+            elif max(abs(x-x_b_king), abs(y-y_b_king)) < max(abs(x-x_w_king), abs(y-y_w_king)):
                 cost[move] += threat_value
 
         return min(cost, key=cost.get), cost[min(cost, key=cost.get)]

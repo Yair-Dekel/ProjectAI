@@ -1,4 +1,10 @@
 from piece import Piece
+STAY_IN_PLACE = 16
+BESIDE_PAWN = 0
+PAWM_PROTECTED = 0
+OPOSITION = 3
+OPOSITION_SCORE = 2
+PROTECT_PATH = 5
 
 class King(Piece):
     
@@ -83,19 +89,30 @@ class King(Piece):
         king_moves = king.possible_moves2() 
         moves = self.possible_moves2()
         x_pawn, y_pawn = pawn.position
+        x_w_king, y_w_king = king.position
+
+        # remove the moves that are not possible for the king because of the pawn
         if (x_pawn - 1, y_pawn - 1) in moves:
             moves.remove((x_pawn - 1, y_pawn - 1))
         if (x_pawn - 1, y_pawn + 1) in moves:
             moves.remove((x_pawn - 1, y_pawn + 1))
         
-        # remove the moves that are not possible for the king
+        # remove the moves that are not possible for the king because of the white king
         moves = [move for move in moves if move not in king_moves]
         score = {}
+
+        # eat the pawn if possible
         if pawn.position in moves:
             return pawn.position, 0
+        
         for move in moves:
             x, y = move
+            # distance from above the pawn
             score[move] = (x - (x_pawn - 1)) ** 2 + (y - y_pawn) ** 2
+
+            # king should take the oposition
+            if y == y_w_king and x == x_w_king -2:
+                score[move] -= OPOSITION
         
         # if moves is empty, throw an exception
         if not score:
@@ -104,7 +121,7 @@ class King(Piece):
         return min(score, key=score.get), 0
     
     def objective_function_white(self):
-        pawn_protected = 0
+        pawn_protected = PAWM_PROTECTED
         for piece in self.board.pieces:
             if piece.type == "Pawn":
                 pawn = piece
@@ -120,6 +137,7 @@ class King(Piece):
             moves.remove(pawn.position)
             pawn_protected = 3
 
+        x_b_king, y_b_king = king.position
         x_pawn, y_pawn = pawn.position
         x_king, y_king = self.position
         distance_from_pawn_side = min(abs(x_king - x_pawn)+abs(y_king - (y_pawn-1)), abs(x_king - x_pawn)+abs(y_king - (y_pawn+1)))
@@ -129,10 +147,25 @@ class King(Piece):
             
             score[move] = min(abs(x - x_pawn) + abs(y - y_pawn - 1), abs(x - x_pawn) + abs(y - y_pawn + 1))
             score[move] += pawn_protected
+
+            # king should stay in place
             if distance_from_pawn_side == 0:
-                score[move] += 16
+                score[move] += STAY_IN_PLACE
+            # if king comes beside the pawn
             if abs(x-x_pawn) <= 1 and abs(y-y_pawn) <= 1:
-                score[move] -= 2
+                score[move] -= BESIDE_PAWN
+            
+            # king should take the oposition
+            if y == y_b_king and x == x_b_king + 2:
+                score[move] -= OPOSITION_SCORE
+            # if the king is beside the pawn and above the pawn, and the king protect 3 slots
+            if abs(y-y_pawn) == 1 and x < x_pawn - 1 and x > 0 and not (abs(y_king-y_pawn) == 1 and x_king < x_pawn - 1 and x_king > 0):
+                # the black king is not beside the pawn
+                if not (abs(x_b_king - x_pawn) <= 1 and abs(y_b_king - y_pawn) <= 1):
+                    # count the slots the king keeps from the black king
+                    score[move] -= PROTECT_PATH
+
+                
 
         return min(score, key=score.get), min(score.values())
 
