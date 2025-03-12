@@ -79,6 +79,11 @@ if __name__ == '__main__':
     output = ""
     wins_syzygy = 0
     draw_syzygy = 0
+    contradict_fen = []
+    lose_lose = []
+    lose_win = []
+    win_lose = []
+    win_win = []
 
     j=0
     #for i in range(iterations):
@@ -118,8 +123,8 @@ if __name__ == '__main__':
         #if y_b_k < y_p - x_p - 1 or y_b_k > y_p + x_p + 1:
         if y_b_k < y_p - x_p or y_b_k > y_p + x_p:
             continue
-
-        # the black king closer to the pawn so the black always wins
+            
+        # the black king closer to the pawn so the black always enforce a draw
         if max(abs(x_b_k - x_p), abs(y_b_k - y_p)) < max(abs(x_w_k - x_p), abs(y_w_k - y_p))-1:
             # this is exception case which the black king need one more step to reach the pawn
             if not (abs(x_b_k-x_p) == abs(y_b_k-y_p) and max(abs(x_w_k - x_p), abs(y_w_k - y_p)) - 2 == abs(x_b_k - x_p)):
@@ -135,7 +140,7 @@ if __name__ == '__main__':
 
         board_start.append(chess_board.board)
         white_turn = True
-
+        fen = convert_board_to_fen(chess_board.board)
         wdl = check_result_by_syzygy(chess_board.board)
         if wdl == 0:
             draw_syzygy += 1
@@ -163,9 +168,14 @@ if __name__ == '__main__':
                         if e.args[0] == "No possible moves":
                             draw += 1
                             #j += 1
+                            if wdl == 2:
+                                contradict_fen.append(fen)
+                                win_lose.append(fen)
                             with open("all_boards.txt", "a") as file:
                                 file.write('Draw\n************\n') 
-                                    
+                            if wdl == 0:
+                                lose_lose.append(fen)
+
                             #continue
                             break
 
@@ -184,6 +194,11 @@ if __name__ == '__main__':
                     with open("all_boards.txt", "a") as file:
                         file.write('White wins\n************\n')
                     wins += 1
+                    if wdl == 0:
+                        contradict_fen.append(fen)
+                        lose_win.append(fen)
+                    if wdl == 2:
+                        win_win.append(fen)
                     board_list.pop()
                     board_start.pop()
                     break
@@ -194,6 +209,11 @@ if __name__ == '__main__':
                     with open("all_boards.txt", "a") as file:
                         file.write('Draw\n************\n')
                     draw += 1
+                    if wdl == 2:
+                        contradict_fen.append(fen)
+                        win_lose.append(fen)
+                    if wdl == 0:
+                        lose_lose.append(fen)
                     #board_list.append(chess_board)
         except Exception as e:
             print(f"An error occurred: probaly draw... \n{e}")
@@ -208,6 +228,12 @@ if __name__ == '__main__':
     print()
     print(f'White wins by syzygy: {wins_syzygy} times {wins_syzygy/iterations*100}%')
     print(f'Draw by syzygy: {draw_syzygy} times {draw_syzygy/iterations*100}%')
+
+    print()
+    print(f'expect lose but win: {len(lose_win)}')
+    print(f'expect win but lose: {len(win_lose)}')
+    print(f'expect win and win: {len(win_win)}')
+    print(f'expect lose and lose: {len(lose_lose)}')
 
     with open("output.txt", "w") as file: 
         for chess_board in board_list:

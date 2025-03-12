@@ -5,7 +5,7 @@ import chess
 import chess.syzygy
 
 # Set up a board position (example: King and Pawn vs King)
-board = chess.Board("8/5P2/8/2K5/6k1/8/8/8 w - - 0 1")
+board = chess.Board("3k4/8/8/8/8/8/1P2K3/8 w - - 0 1")
 
 
 
