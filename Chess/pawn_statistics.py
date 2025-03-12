@@ -3,12 +3,68 @@ from king import King
 from pawn import Pawn
 import random
 import sys
+#chess.syzygy
+# Official Website: http://syzygy-tables.info/
+'''Shay Bushinsky
+16:21'''
+'''
+chess.syzygy
+python‑chess
+import chess
+import chess.syzygy
 
+# Set up a board position (example: King and Pawn vs King)
+board = chess.Board("8/8/8/8/8/8/k7/K7 w - - 0 1")
+
+# Specify the directory where your Syzygy tablebase files are stored
+tablebase_path = "/path/to/syzygy"
+
+with chess.syzygy.open_tablebase(tablebase_path) as tablebase:
+    wdl = tablebase.probe_wdl(board)  # Returns winning/drawing/losing info
+    dtm = tablebase.probe_dtm(board)  # Returns moves to mate or distance to draw info
+
+print("WDL:", wdl)
+prin
+‪Yair - Shay 16‬‏'''
+
+def convert_board_to_fen(board):
+    fen = ""
+    for i in range(8):
+        empty = 0
+        for j in range(8):
+            if board[i][j] == ' ':
+                empty += 1
+                #if j == 7 and empty > 0:
+                #    fen += str(empty)
+            else:
+                if empty > 0:
+                    fen += str(empty)
+                    empty = 0
+                fen += str(board[i][j])
+        if empty > 0:
+            fen += str(empty)
+        if i < 7:
+            fen += "/"
+    return fen + " w - - 0 1"
+
+
+def check_result_by_syzygy(board):
+    import chess
+    import chess.syzygy
+    fen = convert_board_to_fen(board)
+    #print(fen)
+    # Set up a board position (example: King and Pawn vs King)
+    board = chess.Board(fen)
+    # Specify the directory where your Syzygy tablebase files are stored
+    tablebase_path = "C:\\Users\\Yair\\pythonProjects\\ProgectAI\\tables"
+    with chess.syzygy.open_tablebase(tablebase_path) as tablebase:
+        wdl = tablebase.probe_wdl(board)  # Returns winning/drawing/losing info
+    return wdl
 
 if __name__ == '__main__':
 
     iterations = 1000
-    moves = 30
+    moves = 50
     if len(sys.argv) > 1:
         iterations = int(sys.argv[1])
         if len(sys.argv) > 2:
@@ -21,6 +77,8 @@ if __name__ == '__main__':
     board_list = []
     board_start = []
     output = ""
+    wins_syzygy = 0
+    draw_syzygy = 0
 
     j=0
     #for i in range(iterations):
@@ -77,6 +135,14 @@ if __name__ == '__main__':
 
         board_start.append(chess_board.board)
         white_turn = True
+
+        wdl = check_result_by_syzygy(chess_board.board)
+        if wdl == 0:
+            draw_syzygy += 1
+        elif wdl == 2:
+            wins_syzygy += 1
+            
+
         try:
             for i in range(moves):
                 if white_turn:
@@ -96,18 +162,19 @@ if __name__ == '__main__':
                     except Exception as e:
                         if e.args[0] == "No possible moves":
                             draw += 1
-                            j += 1
+                            #j += 1
                             with open("all_boards.txt", "a") as file:
                                 file.write('Draw\n************\n') 
                                     
-                            continue
+                            #continue
+                            break
 
                 #chess_board.print_board()
                 #print(' ')
 
                 if len(chess_board.pieces) < 3:
                     #print('black wins')
-                    loses += 1
+                    draw += 1
                     #board_list.append(chess_board)
                     break
                 pawn_pos_x, pawn_pos_y = pieces[2].position
@@ -125,18 +192,22 @@ if __name__ == '__main__':
                 white_turn = not white_turn
                 if i == moves - 1:
                     with open("all_boards.txt", "a") as file:
-                        file.write('Black wins\n************\n')
-                    loses += 1
+                        file.write('Draw\n************\n')
+                    draw += 1
                     #board_list.append(chess_board)
         except Exception as e:
             print(f"An error occurred: probaly draw... \n{e}")
-            exceptions += 1        
+            exceptions += 1
+        
         j += 1
     
     print(f'White wins: {wins} times {wins/iterations*100}%')
     print(f'Black wins: {loses} times {loses/iterations*100}%')
     print(f'Draw: {draw} times {draw/iterations*100}%')
     print(f'Exceptions: {exceptions} times {exceptions/iterations*100}%')
+    print()
+    print(f'White wins by syzygy: {wins_syzygy} times {wins_syzygy/iterations*100}%')
+    print(f'Draw by syzygy: {draw_syzygy} times {draw_syzygy/iterations*100}%')
 
     with open("output.txt", "w") as file: 
         for chess_board in board_list:
