@@ -171,6 +171,84 @@ class King(Piece):
                 
 
         return min(score, key=score.get), min(score.values())
+    
+    def objective_function_white2(self):
+        pawn_protected = PAWM_PROTECTED
+        for piece in self.board.pieces:
+            if piece.type == "Pawn":
+                pawn = piece
+            if piece.type == "King" and piece.color == "black":
+                king = piece
+        
+        pawn_statement, pawn_best_move = pawn.objective_function3()
+        
+        # If the pawn must move, return its move
+        if "must move on" in pawn_statement:
+            return "Pawn", pawn_best_move
+        
+        pawn_moves = pawn.possible_moves(self.board)
+        king_moves = king.possible_moves2() 
+        moves = self.possible_moves2()
+        
+        # Remove the moves that are not possible for the king
+        moves = [move for move in moves if move not in king_moves]
+        if pawn.position in moves:
+            moves.remove(pawn.position)
+
+        x_b_king, y_b_king = king.position
+        x_pawn, y_pawn = pawn.position
+        x_king, y_king = self.position
+
+        # promote the pawn unless the black king capture the oposition
+        if pawn_statement == "not defended, can move":
+            if not (x_king - 2, y_king) in king_moves:
+                return "Pawn", pawn_best_move
+            
+        # If the pawn is defended, and the black king far away, promote the pawn unless the pawn above the king
+        if pawn_statement == "defended, can move":
+            if abs(y_b_king - y_pawn) > 2 and abs(y_b_king - y_king) > 2 and x_pawn >= x_king:
+                return "Pawn", pawn_best_move
+
+        distance_from_pawn_side = min(abs(x_king - x_pawn) + abs(y_king - (y_pawn-1)),
+                                      abs(x_king - x_pawn) + abs(y_king - (y_pawn+1)))
+
+        score = {}
+        for move in moves:
+            x, y = move
+            
+            score[move] = min(abs(x - x_pawn) + abs(y - y_pawn - 1), abs(x - x_pawn) + abs(y - y_pawn + 1))
+            score[move] += pawn_protected
+
+            # King should stay in place
+            if distance_from_pawn_side == 0:
+                score[move] += STAY_IN_PLACE
+            # If king comes beside the pawn
+            if abs(x-x_pawn) <= 1 and abs(y-y_pawn) <= 1:
+                score[move] -= BESIDE_PAWN
+            
+            # King should take the opposition
+            if y == y_b_king and x == x_b_king + 2:
+                score[move] -= OPOSITION_SCORE
+                
+            # If the king is beside the pawn and above it, and protects 3 slots
+            if abs(y-y_pawn) == 1 and x < x_pawn - 1 and x > 0 and not (abs(y_king-y_pawn) == 1 and x_king < x_pawn - 1 and x_king > 0):
+                # The black king is not beside the pawn
+                if not (abs(x_b_king - x_pawn) <= 1 and abs(y_b_king - y_pawn) <= 1):
+                    # Count the slots the king keeps from the black king
+                    score[move] -= PROTECT_PATH
+        
+        best_king_move = min(score, key=score.get)
+        best_king_score = min(score.values())
+        
+
+        return "King", best_king_move
+        '''else:
+        # If the king can move to defend the pawn, prioritize that
+        if abs(best_king_move[0] - x_pawn) <= 1 and abs(best_king_move[1] - y_pawn) <= 1:
+            return "King", best_king_move
+        # Otherwise, consider moving the pawn if possible
+        return "Pawn", pawn_best_move'''
+
 
     def objective_function(self):
         layers = self.board.make_layers().copy()
