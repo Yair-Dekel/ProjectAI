@@ -5,8 +5,7 @@ import random
 import sys
 #chess.syzygy
 # Official Website: http://syzygy-tables.info/
-'''Shay Bushinsky
-16:21'''
+
 '''
 chess.syzygy
 python‑chess
@@ -24,8 +23,7 @@ with chess.syzygy.open_tablebase(tablebase_path) as tablebase:
     dtm = tablebase.probe_dtm(board)  # Returns moves to mate or distance to draw info
 
 print("WDL:", wdl)
-prin
-‪Yair - Shay 16‬‏'''
+'''
 
 def convert_board_to_fen(board):
     fen = ""
@@ -63,7 +61,7 @@ def check_result_by_syzygy(board):
 
 if __name__ == '__main__':
 
-    iterations = 1000
+    iterations = 10000
     moves = 50
     if len(sys.argv) > 1:
         iterations = int(sys.argv[1])
@@ -79,7 +77,7 @@ if __name__ == '__main__':
     output = ""
     wins_syzygy = 0
     draw_syzygy = 0
-    contradict_fen = []
+    contradict_fen = set()
     lose_lose = []
     lose_win = []
     win_lose = []
@@ -129,6 +127,7 @@ if __name__ == '__main__':
             # this is exception case which the black king need one more step to reach the pawn
             if not (abs(x_b_k-x_p) == abs(y_b_k-y_p) and max(abs(x_w_k - x_p), abs(y_w_k - y_p)) - 2 == abs(x_b_k - x_p)):
                 continue
+
         if j < 100:
             with open("all_boards.txt", "a") as file: 
                 chess_board.print_to_file(file)
@@ -169,7 +168,7 @@ if __name__ == '__main__':
                             draw += 1
                             #j += 1
                             if wdl == 2:
-                                contradict_fen.append(fen)
+                                contradict_fen.add(fen)
                                 win_lose.append(fen)
                             with open("all_boards.txt", "a") as file:
                                 file.write('Draw\n************\n') 
@@ -195,7 +194,7 @@ if __name__ == '__main__':
                         file.write('White wins\n************\n')
                     wins += 1
                     if wdl == 0:
-                        contradict_fen.append(fen)
+                        contradict_fen.add(fen)
                         lose_win.append(fen)
                     if wdl == 2:
                         win_win.append(fen)
@@ -210,7 +209,7 @@ if __name__ == '__main__':
                         file.write('Draw\n************\n')
                     draw += 1
                     if wdl == 2:
-                        contradict_fen.append(fen)
+                        contradict_fen.add(fen)
                         win_lose.append(fen)
                     if wdl == 0:
                         lose_lose.append(fen)
@@ -230,6 +229,7 @@ if __name__ == '__main__':
     print(f'Draw by syzygy: {draw_syzygy} times {draw_syzygy/iterations*100}%')
 
     print()
+    print(f'contradict_fen: {len(contradict_fen)}')
     print(f'expect lose but win: {len(lose_win)}')
     print(f'expect win but lose: {len(win_lose)}')
     print(f'expect win and win: {len(win_win)}')
