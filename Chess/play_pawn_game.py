@@ -41,11 +41,24 @@ def convert_board_to_fen(board):
     return fen + " w - - 0 1"
 
 def convert_fen_to_positions(fen):
-    # check if the fen is valid
-    if not "P" in fen or not "K" in fen or not "k" in fen:
-        return None, None, None
+    rows = fen.split()[0].split('/')  # Get the board part of the FEN
+    piece_positions = {}
     
-
+    for x, row in enumerate(rows):
+        y = 0
+        for char in row:
+            if char.isdigit():  # Empty squares
+                y += int(char)
+            else:
+                if char == 'P':  # White pawn
+                    piece_positions['Pawn'] = (x, y)
+                elif char == 'K':  # White king
+                    piece_positions['White King'] = (x, y)
+                elif char == 'k':  # Black king
+                    piece_positions['Black King'] = (x, y)
+                y += 1
+    
+    return piece_positions
 
 def check_result_by_syzygy(board, tablebase_path):
     fen = convert_board_to_fen(board)
@@ -61,28 +74,6 @@ def run_kpvk_game(tablebase_path, max_moves=50, pawn_pos=None, w_king_pos=None, 
         Pawn('white', "Pawn", chess_board)
     ]
     
-    # Place the black king
-    '''position_black_king = (random.randint(0, 7), random.randint(0, 7))
-    chess_board.add_piece(pieces[0], position_black_king)
-    x_b_k, y_b_k = position_black_king
-
-    # Place the white king
-    position_white_king = position_black_king
-    while not chess_board.check_empty(position_white_king):
-        position_white_king = (random.randint(0, 7), random.randint(0, 7))
-        x_w_k, y_w_k = position_white_king
-        if abs(x_b_k - x_w_k) <= 1 and abs(y_b_k - y_w_k) <= 1:
-            position_white_king = position_black_king
-    chess_board.add_piece(pieces[1], position_white_king)
-
-    # Place the white pawn
-    position_pawn = position_black_king
-    while not chess_board.check_empty(position_pawn):
-        position_pawn = (random.randint(0, 6), random.randint(0, 7))
-        x_p, y_p = position_pawn
-        if x_b_k + 1 == x_p and abs(y_b_k - y_p) == 1:
-            position_pawn = position_black_king
-    chess_board.add_piece(pieces[2], position_pawn)'''
     if pawn_pos is None or w_king_pos is None or b_king_pos is None:
         pawn_pos, w_king_pos, b_king_pos = generate_random_positions()
 
@@ -131,7 +122,7 @@ def run_kpvk_game(tablebase_path, max_moves=50, pawn_pos=None, w_king_pos=None, 
     
     return "Draw", wdl, fen
 
-def run_KPvk_game(tablebase_path, max_moves=50, pawn_pos=None, w_king_pos=None, b_king_pos=None, white_turn=True, print_board=False):
+def run_KPvk_game(tablebase_path, max_moves=50, pawn_pos=None, w_king_pos=None, b_king_pos=None, white_turn=True, print_board=False, random_positions=True, fen=None):
     chess_board = Board()
     pieces = [
         King('black', "King", chess_board),
@@ -139,8 +130,13 @@ def run_KPvk_game(tablebase_path, max_moves=50, pawn_pos=None, w_king_pos=None, 
         Pawn('white', "Pawn", chess_board)
     ]
     
-    if pawn_pos is None or w_king_pos is None or b_king_pos is None:
+    if random_positions:
         pawn_pos, w_king_pos, b_king_pos = generate_random_positions()
+    if fen and not random_positions:
+        positions = convert_fen_to_positions(fen)
+        pawn_pos = positions['Pawn']
+        w_king_pos = positions['White King']
+        b_king_pos = positions['Black King']
 
     chess_board.add_piece(pieces[0], b_king_pos)   
     chess_board.add_piece(pieces[1], w_king_pos)

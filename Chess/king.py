@@ -209,7 +209,9 @@ class King(Piece):
             if abs(y_b_king - y_pawn) > 2 and abs(y_b_king - y_king) > 2 and x_pawn >= x_king:
                 return "Pawn", pawn_best_move
             # If the pawn is defended, and the black king at the one row before end, promote the pawn.
-            if x_b_king <= 1:
+
+            # If the pawn still defended after the move, and the black king in row below, promote the pawn.
+            if (abs(pawn_best_move[0] - x_king) <= 1 and abs(pawn_best_move[1] - y_king) <= 1) and (x_b_king >= x_pawn or (x_b_king <= 1 and x_pawn <= 2)):
                 return "Pawn", pawn_best_move
 
         distance_from_pawn_side = min(abs(x_king - x_pawn) + abs(y_king - (y_pawn-1)),

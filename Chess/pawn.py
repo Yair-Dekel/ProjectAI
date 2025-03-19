@@ -164,7 +164,7 @@ class Pawn(Piece):
         # check if the pawn cannot be captured by the king by no means
         if x_pawn < x_b_king and x_pawn > 0 and (x_pawn - 1, y_pawn) in moves:
             return "must move on", moves[-1]
-        if (y_b_king < y_pawn - x_pawn or y_b_king > y_pawn + x_pawn) and (x_pawn - 1, y_pawn) in moves:
+        if (y_b_king < y_pawn - (moves[-1][0] + 1) or y_b_king > y_pawn + moves[-1][0]+1):
             return "must move on", moves[-1]
         
         # the pawn shouldn't pass the king unless it in the last rows
@@ -184,7 +184,7 @@ class Pawn(Piece):
             
             # not next to the king and can't move next to the king
             # the pawn should move on if it in the columns next to the king, and the white king is above the black king (or in the same row)
-            elif abs(x_pawn - x_w_king) <= 1 and x_b_king <= x_w_king:
+            elif abs(y_pawn - y_w_king) <= 1 and x_b_king <= x_w_king:
                 return "must move on", moves[0]
             
             # if the white king between the black king and the pawn, the pawn should move on
