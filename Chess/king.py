@@ -208,6 +208,9 @@ class King(Piece):
         if pawn_statement == "defended, can move":
             if abs(y_b_king - y_pawn) > 2 and abs(y_b_king - y_king) > 2 and x_pawn >= x_king:
                 return "Pawn", pawn_best_move
+            # If the pawn is defended, and the black king at the one row before end, promote the pawn.
+            if x_b_king <= 1:
+                return "Pawn", pawn_best_move
 
         distance_from_pawn_side = min(abs(x_king - x_pawn) + abs(y_king - (y_pawn-1)),
                                       abs(x_king - x_pawn) + abs(y_king - (y_pawn+1)))
@@ -236,10 +239,12 @@ class King(Piece):
                 if not (abs(x_b_king - x_pawn) <= 1 and abs(y_b_king - y_pawn) <= 1):
                     # Count the slots the king keeps from the black king
                     score[move] -= PROTECT_PATH
-        
-        best_king_move = min(score, key=score.get)
-        best_king_score = min(score.values())
-        
+        if score:
+            best_king_move = min(score, key=score.get)
+            best_king_score = min(score.values())
+        else:
+            best_king_move = None
+            best_king_score = None
 
         return "King", best_king_move
         '''else:

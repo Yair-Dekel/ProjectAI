@@ -153,8 +153,9 @@ class Pawn(Piece):
                 white_king = piece
 
         moves = self.possible_moves(self.board)
+
         if len(moves) == 0:
-            return "can't move"
+            return "can't move", None
         
         x_b_king, y_b_king = black_king.position
         x_w_king, y_w_king = white_king.position
@@ -163,7 +164,7 @@ class Pawn(Piece):
         # check if the pawn cannot be captured by the king by no means
         if x_pawn < x_b_king and x_pawn > 0 and (x_pawn - 1, y_pawn) in moves:
             return "must move on", moves[-1]
-        if (y_b_king < y_pawn - x_pawn - 1 or y_b_king > y_pawn + x_pawn + 1) and (x_pawn - 1, y_pawn) in moves:
+        if (y_b_king < y_pawn - x_pawn or y_b_king > y_pawn + x_pawn) and (x_pawn - 1, y_pawn) in moves:
             return "must move on", moves[-1]
         
         # the pawn shouldn't pass the king unless it in the last rows
