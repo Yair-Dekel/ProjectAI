@@ -162,7 +162,7 @@ class Pawn(Piece):
         x_pawn, y_pawn = self.position        
 
         # check if the pawn cannot be captured by the king by no means
-        if x_pawn < x_b_king and x_pawn > 0 and (x_pawn - 1, y_pawn) in moves:
+        if moves[-1][0]+1 < x_b_king and x_pawn > 0 and (x_pawn - 1, y_pawn) in moves:
             return "must move on", moves[-1]
         if (y_b_king < y_pawn - (moves[-1][0] + 1) or y_b_king > y_pawn + moves[-1][0]+1):
             return "must move on", moves[-1]
