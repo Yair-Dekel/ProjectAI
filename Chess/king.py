@@ -214,14 +214,13 @@ class King(Piece):
             if (abs(pawn_best_move[0] - x_king) <= 1 and abs(pawn_best_move[1] - y_king) <= 1) and (x_b_king >= x_pawn or (x_b_king <= 1 and x_pawn <= 2)):
                 return "Pawn", pawn_best_move
 
-        distance_from_pawn_side = min(abs(x_king - x_pawn) + abs(y_king - (y_pawn-1)),
-                                      abs(x_king - x_pawn) + abs(y_king - (y_pawn+1)))
+        distance_from_pawn_side = min(abs(x_king - (x_pawn-1)) + abs(y_king - (y_pawn-1)), abs(x_king - (x_pawn-1)) + abs(y_king - (y_pawn+1)))
 
         score = {}
         for move in moves:
             x, y = move
             
-            score[move] = min(abs(x - x_pawn) + abs(y - y_pawn - 1), abs(x - x_pawn) + abs(y - y_pawn + 1))
+            score[move] = min(abs(x - (x_pawn-1)) + abs(y - y_pawn - 1), abs(x - (x_pawn-1)) + abs(y - y_pawn + 1))
             score[move] += pawn_protected
 
             # King should stay in place
