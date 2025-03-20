@@ -7,7 +7,7 @@ import random
 tablebase_path = "C:\\Users\\Yair\\pythonProjects\\ProgectAI\\tables"
 
 # Run the King vs Pawn vs King game
-result = run_KPvk_game(tablebase_path, max_moves=50, print_board=True, random_positions=False, fen="8/4k3/8/8/8/4P3/6K1/8 w - - 0 1")
+result = run_KPvk_game(tablebase_path, max_moves=50, print_board=True, random_positions=True, gui=True)
 print(result)
 
 except_win_but_draw = 0

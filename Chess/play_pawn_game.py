@@ -6,6 +6,10 @@ import sys
 import random
 import chess
 import chess.syzygy
+import tkinter as tk
+from chess_gui import ChessGUI
+import threading
+import time
 
 def generate_random_positions():
     """Generate random valid positions for KPvK."""
@@ -122,7 +126,51 @@ def run_kpvk_game(tablebase_path, max_moves=50, pawn_pos=None, w_king_pos=None, 
     
     return "Draw", wdl, fen
 
-def run_KPvk_game(tablebase_path, max_moves=50, pawn_pos=None, w_king_pos=None, b_king_pos=None, white_turn=True, print_board=False, random_positions=True, fen=None):
+def run_game(max_moves=50, white_turn=True, print_board=False, fen=None, pieces=None, wdl=None, chess_board=None, gui=False):
+        
+    # Play the game
+    for _ in range(max_moves):
+        if gui:
+            time.sleep(0.5)
+        if white_turn:
+            piece, move = pieces[1].objective_function_white2()
+            if move == None:
+                return "Draw", wdl, fen
+            if piece == "Pawn":
+                chess_board.move_piece(pieces[2], move)
+            if piece == "King":
+                chess_board.move_piece(pieces[1], move)
+
+        else:
+            try:
+                black_king_move, _ = pieces[0].objective_function_black()
+                chess_board.move_piece(pieces[0], black_king_move)
+            except Exception as e:
+                if str(e) == "No possible moves":
+                    return "Draw", wdl, fen
+                
+        if print_board:
+            chess_board.print_board()
+
+        # Check for game-ending conditions
+        if len(chess_board.pieces) < 3:
+            return "Draw", wdl, fen
+
+        if pieces[2].position[0] == 0:
+            # Check if the black king can capture the pawn immediately
+            if abs(pieces[0].position[0] - pieces[2].position[0]) <= 1 and abs(pieces[0].position[1] - pieces[2].position[1]) <= 1:
+                # If the white king is not protecting the pawn, it's a draw
+                if not (abs(pieces[1].position[0] - pieces[2].position[0]) <= 1 and abs(pieces[1].position[1] - pieces[2].position[1]) <= 1):
+                    return "Draw", wdl, fen
+
+            return "White wins", wdl, fen
+
+        white_turn = not white_turn
+    
+    return "Draw", wdl, fen
+
+def run_KPvk_game(tablebase_path, max_moves=50, pawn_pos=None, w_king_pos=None, b_king_pos=None, white_turn=True, print_board=False, random_positions=True, fen=None, gui=False):
+
     chess_board = Board()
     pieces = [
         King('black', "King", chess_board),
@@ -148,6 +196,22 @@ def run_KPvk_game(tablebase_path, max_moves=50, pawn_pos=None, w_king_pos=None, 
     if print_board:
         chess_board.print_board()
     
+    if gui:
+        root = tk.Tk()
+        gui = ChessGUI(root, chess_board)
+
+
+        game_thread = threading.Thread(target=run_game, args=(max_moves, white_turn, False, fen, pieces, wdl, chess_board, True), daemon=True)
+
+        game_thread.start()
+
+        # Start Tkinter main loop
+        root.mainloop()
+
+    else:
+        return run_game(max_moves, white_turn, print_board, fen, pieces, wdl, chess_board)
+
+    '''   
     # Play the game
     for _ in range(max_moves):
         if white_turn:
@@ -186,7 +250,7 @@ def run_KPvk_game(tablebase_path, max_moves=50, pawn_pos=None, w_king_pos=None, 
         white_turn = not white_turn
     
     return "Draw", wdl, fen
-
+'''
 
 
 

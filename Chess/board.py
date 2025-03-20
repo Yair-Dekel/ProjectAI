@@ -1,6 +1,3 @@
-# first player : king 
-# secound player : king + rook + rook
-
 import copy
 
 from rx.subject import Subject
