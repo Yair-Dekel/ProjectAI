@@ -1,7 +1,7 @@
 from piece import Piece
 STAY_IN_PLACE = 16
 BESIDE_PAWN = 0
-PAWM_PROTECTED = 0
+PAWM_PROTECTED = 3
 OPOSITION = 3
 OPOSITION_SCORE = 2
 PROTECT_PATH = 5
@@ -105,10 +105,17 @@ class King(Piece):
         if pawn.position in moves:
             return pawn.position, 0
         
+        # if the pawn and the w_king is in the edge, and b_king between them, take the oposition to the w_king
+        if x_w_king + 1 == self.position[0] and self.position[0] + 1 == x_pawn and abs(self.position[1] - y_pawn) == 2 and abs(self.position[1] - y_w_king) == 2 and (self.position[0] -1, self.position[1]) in moves:
+            return (self.position[0] - 1, self.position[1]), 0
+        
         for move in moves:
             x, y = move
             # distance from above the pawn
             score[move] = (x - (x_pawn - 1)) ** 2 + (y - y_pawn) ** 2
+
+            if x_pawn == 6:
+                score[move] = (x - (x_pawn - 2)) ** 2 + (y - y_pawn) ** 2
 
             # king should take the oposition
             if y == y_w_king and x == x_w_king -2:
@@ -148,6 +155,7 @@ class King(Piece):
             x, y = move
             
             score[move] = min(abs(x - x_pawn) + abs(y - y_pawn - 1), abs(x - x_pawn) + abs(y - y_pawn + 1))
+
             score[move] += pawn_protected
 
             # king should stay in place
@@ -200,6 +208,7 @@ class King(Piece):
         x_king, y_king = self.position
 
         # promote the pawn unless the black king capture the oposition
+        # the pawn not in the edge and y_pawn != 0 and y_pawn != 7
         if pawn_statement == "not defended, can move":
             if not (x_king - 2, y_king) in king_moves:
                 return "Pawn", pawn_best_move
@@ -221,7 +230,10 @@ class King(Piece):
             x, y = move
             
             score[move] = min(abs(x - (x_pawn-1)) + abs(y - y_pawn - 1), abs(x - (x_pawn-1)) + abs(y - y_pawn + 1))
-            score[move] += pawn_protected
+
+
+            if abs(x - x_pawn) <= 1 and abs(y - y_pawn) <= 1 and x_king == x_pawn:
+                score[move] -= pawn_protected
 
             # King should stay in place
             if distance_from_pawn_side == 0:
