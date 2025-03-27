@@ -8,7 +8,7 @@ tablebase_path = "C:\\Users\\Yair\\pythonProjects\\ProgectAI\\tables"
 
 '''
 # Run the King vs Pawn vs King game
-result = run_KPvk_game(tablebase_path, max_moves=50, print_board=True,random_positions=False, fen ="3k4/8/K7/8/P7/8/8/8 w - - 0 1")
+result = run_KPvk_game(tablebase_path, max_moves=50, print_board=True,random_positions=False, fen ="8/7K/8/8/4k3/6P1/8/8 b - - 0 1")
 print(result)'''
 
 except_win_but_draw = 0
@@ -18,7 +18,7 @@ except_win_and_win = 0
 
 
 with open("fen.txt", "w") as f:
-    for _ in range(1000):
+    for _ in range(10000):
         result = run_KPvk_game(tablebase_path, max_moves=50, print_board=False)
         if result[0] == "White wins" and result[1] == 0:
             f.write(result[2] + "   except_draw_but_win" + "\n")

@@ -112,15 +112,28 @@ class King(Piece):
         for move in moves:
             x, y = move
             # distance from above the pawn
-            score[move] = (x - (x_pawn - 1)) ** 2 + (y - y_pawn) ** 2
+            score[move] = (x - (x_pawn - 1)) ** 2 + (y - y_pawn) ** 2 
 
+            # if the pawn is in his first row he can move 2 steps
             if x_pawn == 6:
                 score[move] = (x - (x_pawn - 2)) ** 2 + (y - y_pawn) ** 2
+
+            '''# if the w_king is far away from the pawn, the b_king get closer to the pawn
+            if max(abs(x_pawn - x_w_king), abs(y_pawn - y_w_king)) > max(abs(x_pawn - x), abs(y_pawn - y)):
+                score[move] = (x - (x_pawn)) ** 2 + (y - y_pawn) ** 2'''
+            # if the next move of the white king it took the opposition, then not go to there
+            if x + 3 == x_w_king and abs(y - y_w_king) <= 1 and abs(x - x_pawn) >=2:
+                score[move] += 5
+            
+            if self.position[0] + 4 == x_w_king and x_pawn == x_w_king and (y==y_pawn or y==y_w_king):
+                score[move] -= OPOSITION
+        
 
             # king should take the oposition
             if y == y_w_king and x == x_w_king -2:
                 score[move] -= OPOSITION
-        
+
+
         # if moves is empty, throw an exception
         if not score:
             raise Exception("No possible moves")
