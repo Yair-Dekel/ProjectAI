@@ -2,7 +2,7 @@ from piece import Piece
 STAY_IN_PLACE = 16
 BESIDE_PAWN = 0
 PAWM_PROTECTED = 3
-OPOSITION = 6
+OPOSITION = 9
 OPOSITION_SCORE = 2
 PROTECT_PATH = 5
 
@@ -90,6 +90,7 @@ class King(Piece):
         moves = self.possible_moves2()
         x_pawn, y_pawn = pawn.position
         x_w_king, y_w_king = king.position
+        x_king, y_king = self.position
 
         # remove the moves that are not possible for the king because of the pawn
         if (x_pawn - 1, y_pawn - 1) in moves:
@@ -101,6 +102,10 @@ class King(Piece):
         moves = [move for move in moves if move not in king_moves]
         score = {}
 
+        # if pawn position is in king_movse, remove it
+        if pawn.position in king_moves:
+            king_moves.remove(pawn.position)
+
         # eat the pawn if possible
         if pawn.position in moves:
             return pawn.position, 0
@@ -108,6 +113,20 @@ class King(Piece):
         # if the pawn and the w_king is in the edge, and b_king between them, take the oposition to the w_king
         if x_w_king + 1 == self.position[0] and self.position[0] + 1 == x_pawn and abs(self.position[1] - y_pawn) == 2 and abs(self.position[1] - y_w_king) == 2 and (self.position[0] -1, self.position[1]) in moves:
             return (self.position[0] - 1, self.position[1]), 0
+        
+        '''if x_king == 0 and x_king + 3 == x_w_king and abs(y_pawn - y_w_king) == 2 and (x_king + 1, ((y_pawn + y_w_king)/2)) in moves:
+            return (x_king + 1, int((y_pawn + y_w_king)/2)), 0'''
+        
+        if y_w_king + 1 == y_king and y_king + 1 == y_pawn and x_king + 2 == x_w_king and x_w_king + 2 == x_pawn and (x_king + 1, y_king + 1) in moves:
+            return (x_king + 1, y_king + 1), 0
+        
+        if x_pawn != 6 and (x_pawn, y_pawn - 1) in moves and not (x_w_king == x_pawn + 1 and y_w_king == y_pawn +1):
+            return (x_pawn, y_pawn - 1), 0
+        
+        if (x_pawn - 2, y_pawn) in moves:
+            return (x_pawn - 2, y_pawn), 0
+        
+
         
         for move in moves:
             x, y = move
@@ -141,17 +160,23 @@ class King(Piece):
             if abs(y - y_w_king) == 4 and x == x_w_king - 4:
                 score[move] -= OPOSITION_SCORE
 
+            # not giving the oposition to the white king
+            if y == y_w_king and x == x_w_king - 3 and x_pawn >= x_w_king:
+                score[move] += OPOSITION_SCORE
+            if (x + 2, y) in king_moves and x_pawn >= x_w_king:
+                score[move] += OPOSITION_SCORE
+
             # diagonal opposition, but no when the pawn beside the king      
             if abs(y - y_w_king) == 2 and x == x_w_king - 2 and not (abs(y_pawn - y_w_king) == 1 and x_pawn == x_w_king):
                 score[move] -= OPOSITION_SCORE
             
-            # if the black king can capture the pawn
-            if max(abs(x_pawn - x_w_king), abs(y_pawn - y_w_king)) > max(abs(x_pawn - self.position[0]), abs(y_pawn - self.position[1])) and x_pawn != 6:
-                score[move] = (x - x_pawn) ** 2 + (y - y_pawn) ** 2
-            
             # if the pawn is in the edge, the black king should go to the corner
             if y_pawn == 0 or y_pawn == 7:
-                score[move] = (x - 0) ** 2 + (y - y_pawn) ** 2
+                score[move] = (x - 0) ** 2 + (y - y_pawn) ** 2            
+            
+            # if the black king can capture the pawn
+            if max(abs(x_pawn - x_w_king), abs(y_pawn - y_w_king)) > max(abs(x_pawn - x_king), abs(y_pawn - y_king)) and x_pawn != 6:
+                score[move] = (x - x_pawn) ** 2 + (y - y_pawn) ** 2
 
 
         # if moves is empty, throw an exception
