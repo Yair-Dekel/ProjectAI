@@ -167,6 +167,10 @@ class Pawn(Piece):
         if (y_b_king < y_pawn - (moves[-1][0] + 1) or y_b_king > y_pawn + moves[-1][0]+1):
             return "must move on", moves[-1]
         
+        '''if moves[-1][0] < x_b_king and abs(moves[-1][1] - y_b_king) > 1:
+            return "must move on", moves[-1]'''
+
+        
         # the pawn shouldn't pass the king unless it in the last rows
         if x_pawn <= x_w_king and x_pawn > 2:
             return "pass the king, can't move", moves[0]

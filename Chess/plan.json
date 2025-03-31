@@ -1,0 +1,12 @@
+[
+    {
+      "report": "can move on",
+      "condition": "x > 4 and y > 5",
+      "action": "pawn move forward"
+    },
+    {
+      "report": "blocked",
+      "condition": "x < 3",
+      "action": "king move forward"
+    }
+  ]
