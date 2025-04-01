@@ -1,10 +1,11 @@
 from piece import Piece
+import json
 STAY_IN_PLACE = 16
 BESIDE_PAWN = 0
 PAWM_PROTECTED = 3
 OPOSITION = 9
 OPOSITION_SCORE = 2
-PROTECT_PATH = 5
+PROTECT_PATH = 6
 
 class King(Piece):
     
@@ -126,7 +127,8 @@ class King(Piece):
         if (x_pawn - 2, y_pawn) in moves:
             return (x_pawn - 2, y_pawn), 0
         
-
+        if x_pawn == x_w_king and abs(y_pawn - y_w_king) == 2 and (x_pawn - 4, int((y_pawn + y_w_king)/2)) in moves:
+            return (x_pawn - 4, (y_pawn + y_w_king)/2), 0
         
         for move in moves:
             x, y = move
@@ -177,6 +179,8 @@ class King(Piece):
             # if the black king can capture the pawn
             if max(abs(x_pawn - x_w_king), abs(y_pawn - y_w_king)) > max(abs(x_pawn - x_king), abs(y_pawn - y_king)) and x_pawn != 6:
                 score[move] = (x - x_pawn) ** 2 + (y - y_pawn) ** 2
+
+            
 
 
         # if moves is empty, throw an exception
@@ -268,24 +272,60 @@ class King(Piece):
         x_b_king, y_b_king = king.position
         x_pawn, y_pawn = pawn.position
         x_king, y_king = self.position
+        #x_p_move, y_p_move = pawn_best_move
+
+        '''positions = {"x_p_move": x_p_move, "y_p_move": y_p_move, "x_w_king": x_king, "y_w_king": y_king, "x_b_king": x_b_king, "y_b_king": y_b_king,"x_pawn": x_pawn, "y_pawn": y_pawn}
+
+        # Load condition-action plan from JSON file
+        with open("plan.json", "r") as file:
+            plan = json.load(file)'''
+        if ((1, 4) == king.position or king.position == (0,4)) and (1, 6) in moves and y_pawn == 7:
+            return "King", (1, 6)
+
+        if ((1, 3) == king.position or king.position == (0,3)) and (1, 1) in moves and y_pawn == 0:
+            return "King", (1, 1)
 
         # promote the pawn unless the black king capture the oposition
         # the pawn not in the edge and y_pawn != 0 and y_pawn != 7
         if pawn_statement == "not defended, can move":
             if not (x_king - 2, y_king) in king_moves:
-                return "Pawn", pawn_best_move
+                # and king not in the corner
+                if not (x_b_king == 0 and (y_b_king == 0 or y_b_king == 7)):
+                    return "Pawn", pawn_best_move
+                # the king in the corner
+                elif abs(x_b_king - x_king) == 1 and (x_pawn - 1, y_pawn) in moves:
+                    return "King", (x_pawn - 1, y_pawn)
             
         # If the pawn is defended, and the black king far away, promote the pawn unless the pawn above the king
         if pawn_statement == "defended, can move":
-            if abs(y_b_king - y_pawn) > 2 and abs(y_b_king - y_king) > 2 and x_pawn >= x_king:
+            if abs(y_b_king - y_pawn) > 2 and abs(y_b_king - y_king) > 2 and x_pawn >= x_king :
                 return "Pawn", pawn_best_move
             # If the pawn is defended, and the black king at the one row before end, promote the pawn.
 
             # If the pawn still defended after the move, and the black king in row below, promote the pawn.
             if (abs(pawn_best_move[0] - x_king) <= 1 and abs(pawn_best_move[1] - y_king) <= 1) and (x_b_king >= x_pawn or (x_b_king <= 1 and x_pawn <= 2)):
                 return "Pawn", pawn_best_move
+        
+        if pawn_statement == "black king in the corner, king should move back":
+            moves = [move for move in moves if move[0] > x_king]
+            
+        # If the pawn and the king beside each other, the king should go above the pawn, unless the black king capture the oposition or the pawn is in the edge
+        if x_pawn == x_king and abs(y_pawn - y_king) <= 1 and (x_pawn - 1, y_pawn) in moves and not (x_pawn - 3, y_pawn) in king_moves and y_pawn != 0 and y_pawn != 7:
+            return "King", (x_pawn - 1, y_pawn)
+        
+        # king should go beneath the pawn
+        if abs(y_pawn - y_b_king) == 2 and x_pawn == x_b_king and y_king == (y_pawn + y_b_king)/2 and (x_pawn + 1, y_pawn) in moves:
+            return "King", (x_pawn + 1, y_pawn)
+        
+        # king should go up
+        if (y_pawn == 0 or y_pawn == 7) and abs(y_pawn - y_king) <= 1 and 0 < x_b_king < x_king and (x_king - 1, y_king) in moves:
+            return "King", (x_king - 1, y_king)
 
         distance_from_pawn_side = min(abs(x_king - (x_pawn-1)) + abs(y_king - (y_pawn-1)), abs(x_king - (x_pawn-1)) + abs(y_king - (y_pawn+1)))
+
+        if ((self.position == (1, 1) and y_pawn == 0) or (self.position == (1, 6) and y_pawn == 7)) and pawn_best_move:
+            return "Pawn", pawn_best_move
+            
 
         score = {}
         for move in moves:
@@ -307,11 +347,15 @@ class King(Piece):
             # King should take the opposition
             if y == y_b_king and x == x_b_king + 2:
                 score[move] -= OPOSITION_SCORE
+            
+            # if the king below the pawn go to more distant place
+            if x_pawn < x_king and y_pawn == y_king and abs(x_pawn - x) <= 1:
+                score[move] -= abs(y - y_b_king)
                 
             # If the king is beside the pawn and above it, and protects 3 slots
-            if abs(y-y_pawn) == 1 and x < x_pawn - 1 and x > 0 and not (abs(y_king-y_pawn) == 1 and x_king < x_pawn - 1 and x_king > 0):
+            if abs(y-y_pawn) == 1 and 0 < x < x_pawn - 1 and not (abs(y_king - y_pawn) == 1 and x_king < x_pawn - 1 and x_king > 0):
                 # The black king is not beside the pawn
-                if not (abs(x_b_king - x_pawn) <= 1 and abs(y_b_king - y_pawn) <= 1):
+                if not (abs(x_b_king - x_pawn) <= 1 and abs(y_b_king - y_pawn) <= 1) and not (y_b_king == y):
                     # Count the slots the king keeps from the black king
                     score[move] -= PROTECT_PATH
         if score:

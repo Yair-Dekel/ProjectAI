@@ -12,7 +12,7 @@ print(result)
 
 with open("fen.txt", "r") as f:
     for line in f:
-        if "except_draw_but_win" in line:
+        if "except_draw_but_win" not in line:
             fen = line.split()[0]
             fen = fen + " w - - 0 1"
             print(fen)

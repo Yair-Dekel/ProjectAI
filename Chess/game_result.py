@@ -3,6 +3,7 @@
 #python‑chess
 import chess
 import chess.syzygy
+from play_pawn_game import run_KPvk_game
 
 # Set up a board position (example: King and Pawn vs King)
 board = chess.Board("3k4/8/8/8/8/8/1P2K3/8 w - - 0 1")
@@ -16,4 +17,11 @@ with chess.syzygy.open_tablebase(tablebase_path) as tablebase:
     wdl = tablebase.probe_wdl(board)  # Returns winning/drawing/losing info
 
 print("WDL:", wdl)
-# The `probe_wdl` method returns a tuple containing the winning/drawing/losing information for the given board position. The values are represented as follows:
+
+fen = "8/8/8/8/4k2K/8/7P/8 w - - 0 1"
+
+print(fen)
+# Run the King vs Pawn vs King game
+result = run_KPvk_game(tablebase_path, max_moves=50, print_board=True,random_positions=False, fen = fen)
+print(result)
+

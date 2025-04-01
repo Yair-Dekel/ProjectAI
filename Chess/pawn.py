@@ -1,4 +1,7 @@
 from piece import Piece
+import json
+#from json_pawn import evaluate_condition, interpret
+
 DEFENCE_VALUE = 2
 THREAT_VALUE = 16
 INITIAL_COST = 2
@@ -159,17 +162,28 @@ class Pawn(Piece):
         
         x_b_king, y_b_king = black_king.position
         x_w_king, y_w_king = white_king.position
-        x_pawn, y_pawn = self.position        
+        x_pawn, y_pawn = self.position
+        x_move_1, y_move_1 = moves[0]
+        x_move_2, y_move_2 = moves[-1]        
 
         # check if the pawn cannot be captured by the king by no means
         if moves[-1][0]+1 < x_b_king and x_pawn > 0 and (x_pawn - 1, y_pawn) in moves:
             return "must move on", moves[-1]
         if (y_b_king < y_pawn - (moves[-1][0] + 1) or y_b_king > y_pawn + moves[-1][0]+1):
-            return "must move on", moves[-1]
+            if not ((x_w_king == 0 and (y_w_king == 0 or y_w_king == 7)) and (y_pawn == y_w_king and x_pawn == x_w_king + 2)):
+                return "must move on", moves[-1]
         
         '''if moves[-1][0] < x_b_king and abs(moves[-1][1] - y_b_king) > 1:
             return "must move on", moves[-1]'''
+        
+        if x_pawn == x_w_king and y_w_king == y_b_king and abs(y_pawn - y_w_king) == 2 and abs(x_w_king - x_b_king) == 2 and x_pawn <= 3:
+            if (y_b_king == 0 or y_b_king == 7) and x_b_king == 0:
+                return "black king in the corner, king should move back", moves[0]
+            return "must move on", moves[0]
 
+        # if the pawn is captured by the black king, don't move
+        if ((abs(moves[0][0] - x_b_king) <= 1 and abs(moves[0][1] - y_b_king) <= 1) and (abs(moves[0][0] - x_w_king) > 1 or abs(moves[0][1] - y_w_king) > 1)) and ((abs(moves[-1][0] - x_b_king) <= 1 and abs(moves[-1][1] - y_b_king) <= 1) and (abs(moves[0][0] - x_w_king) > 1 or abs(moves[0][1] - y_w_king) > 1)):
+            return "captured by the black king, can't move", None
         
         # the pawn shouldn't pass the king unless it in the last rows
         if x_pawn <= x_w_king and x_pawn > 2:
@@ -181,14 +195,18 @@ class Pawn(Piece):
         
         # the pawn not next to the king
         else:
-            # the panw can advance to be next to the king
+            # the pawn can advance to be next to the king
             if abs(moves[0][0] - x_w_king) <= 1 and abs(moves[0][1] - y_w_king) <= 1:
                 title = "not defended, can move"
                 next_move = moves[0]
             
             # not next to the king and can't move next to the king
-            # the pawn should move on if it in the columns next to the king, and the white king is above the black king (or in the same row)
-            elif abs(y_pawn - y_w_king) <= 1 and x_b_king <= x_w_king:
+            # the pawn should move on if it in the columns next to the king, and the white king is above the black king (or in the same row) and the black king can't capture the pawn
+            elif abs(y_pawn - y_w_king) == 1 and x_b_king >= x_w_king:
+                if abs(x_pawn - x_b_king) == 2 and abs(x_b_king - x_w_king) == 2 and abs(y_b_king - y_pawn) <=2:
+                    return "shouldn't move, can capture by the king", moves[0]
+                if (y_w_king == 7 or y_w_king == 0) and abs(y_pawn - y_w_king):
+                    return "shouldn't move, can capture by the king", moves[0]
                 return "must move on", moves[0]
             
             # if the white king between the black king and the pawn, the pawn should move on

@@ -1,3 +1,4 @@
+
 import json
 
 # Simulate pawn report
@@ -18,10 +19,9 @@ def evaluate_condition(condition: str, variables: dict) -> bool:
 def interpret(report, variables, plan):
     for rule in plan:
         if rule["report"] == report and evaluate_condition(rule["condition"], variables):
-            print(f"Action: {rule['action']}")
-            return rule["action"]
-    print("No valid rule found.")
-    return None
+            return True
+    
+    return False
 
 # Run the interpreter
 interpret(pawn_report, positions, plan)
