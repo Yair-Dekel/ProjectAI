@@ -12,7 +12,7 @@ if __name__ == "__main__":
     tablebase_path = os.path.join(project_root, "tables")
     fen = None
     max_moves=50
-    pawn_pos=None, w_king_pos=None, b_king_pos=None
+    pawn_pos, w_king_pos, b_king_pos = None, None, None
     white_turn=True
     print_board=False
     random_positions=True

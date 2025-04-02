@@ -6,24 +6,7 @@ import sys
 #chess.syzygy
 # Official Website: http://syzygy-tables.info/
 
-'''
-chess.syzygy
-python‑chess
-import chess
-import chess.syzygy
 
-# Set up a board position (example: King and Pawn vs King)
-board = chess.Board("8/8/8/8/8/8/k7/K7 w - - 0 1")
-
-# Specify the directory where your Syzygy tablebase files are stored
-tablebase_path = "/path/to/syzygy"
-
-with chess.syzygy.open_tablebase(tablebase_path) as tablebase:
-    wdl = tablebase.probe_wdl(board)  # Returns winning/drawing/losing info
-    dtm = tablebase.probe_dtm(board)  # Returns moves to mate or distance to draw info
-
-print("WDL:", wdl)
-'''
 
 def convert_board_to_fen(board):
     fen = ""
@@ -114,19 +97,6 @@ if __name__ == '__main__':
             if x_b_k + 1 == x_p and abs(y_b_k - y_p) == 1:
                 position_pawn = position_black_king
         chess_board.add_piece(pieces[2], position_pawn)
-
-        # the pawn out of the range of the black king - the white always wins
-        '''if x_p < x_b_k:
-            continue
-        #if y_b_k < y_p - x_p - 1 or y_b_k > y_p + x_p + 1:
-        if y_b_k < y_p - x_p or y_b_k > y_p + x_p:
-            continue
-            
-        # the black king closer to the pawn so the black always enforce a draw
-        if max(abs(x_b_k - x_p), abs(y_b_k - y_p)) < max(abs(x_w_k - x_p), abs(y_w_k - y_p))-1:
-            # this is exception case which the black king need one more step to reach the pawn
-            if not (abs(x_b_k-x_p) == abs(y_b_k-y_p) and max(abs(x_w_k - x_p), abs(y_w_k - y_p)) - 2 == abs(x_b_k - x_p)):
-                continue'''
 
         if j < 100:
             with open("all_boards.txt", "a") as file: 
@@ -233,13 +203,3 @@ if __name__ == '__main__':
     print(f'expect win and win: {len(win_win)}')
     print(f'expect lose and lose: {len(lose_lose)}')
 
-'''    with open("output.txt", "w") as file: 
-        for chess_board in board_list:
-            chess_board.print_to_file(file)
-            file.write('\n')
-    
-    with open("output_start.txt", "w") as file: 
-        for board in board_start:
-            for row in board:
-                file.write(' '.join([str(piece) if piece != ' ' else '.' for piece in row]) + '\n')
-            file.write('\n')'''
