@@ -3,25 +3,55 @@
 #python‑chess
 import chess
 import chess.syzygy
+import sys
 from play_pawn_game import run_KPvk_game
+import os
 
-# Set up a board position (example: King and Pawn vs King)
-board = chess.Board("3k4/8/8/8/8/8/1P2K3/8 w - - 0 1")
+if __name__ == "__main__":
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    tablebase_path = os.path.join(project_root, "tables")
+    fen = None
+    max_moves=50
+    pawn_pos=None, w_king_pos=None, b_king_pos=None
+    white_turn=True
+    print_board=False
+    random_positions=True
+    gui=False
 
+    # get arguments from command line
+    args = sys.argv[1:]
+    i = 0
+    while i < len(args):
+        if args[i] == 'fen' and i + 6 < len(args):
+            fen = ' '.join(args[i + 1:i + 7]) 
+            i += 6  # Move index forward
+        elif args[i] == 'tablebase_path' and i + 1 < len(args):
+            tablebase_path = args[i + 1]
+            i += 1
+        elif args[i] == 'max_moves' and i + 1 < len(args):
+            max_moves = int(args[i + 1])
+            i += 1
+        elif args[i] == 'pawn_pos' and i + 2 < len(args):
+            pawn_pos = (int(args[i + 1]), int(args[i + 2]))
+            i += 2
+        elif args[i] == 'w_king_pos' and i + 2 < len(args):
+            w_king_pos = (int(args[i + 1]), int(args[i + 2]))
+            i += 2
+        elif args[i] == 'b_king_pos' and i + 2 < len(args):
+            b_king_pos = (int(args[i + 1]), int(args[i + 2]))
+            i += 2
+        elif args[i] == 'not_white_turn':
+            white_turn = False
+        elif args[i] == 'gui':
+            gui = True
+        elif args[i] == 'print_board':
+            print_board = True
+        elif args[i] == 'not_random_positions':
+            random_positions = False
+        i += 1  
 
-
-# Specify the directory where your Syzygy tablebase files are stored
-tablebase_path = "c:\\Users\\Yair\\pythonProjects\\ProgectAI\\tables"
-
-with chess.syzygy.open_tablebase(tablebase_path) as tablebase:
-    wdl = tablebase.probe_wdl(board)  # Returns winning/drawing/losing info
-
-print("WDL:", wdl)
-
-fen = "k7/8/K7/8/1P6/8/8/8 w - - 0 1"
-
-print(fen)
-# Run the King vs Pawn vs King game
-result = run_KPvk_game(tablebase_path, max_moves=50, print_board=True,random_positions=False, fen = fen)
-print(result)
+    print(fen)
+    # Run the King vs Pawn vs King game
+    result = run_KPvk_game(tablebase_path, max_moves=max_moves, print_board=print_board,random_positions=random_positions, fen = fen, gui=gui, pawn_pos=pawn_pos, w_king_pos=w_king_pos, b_king_pos=b_king_pos, white_turn=white_turn)
+    print(result)
 
