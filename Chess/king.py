@@ -285,16 +285,29 @@ class King(Piece):
         if ((1, 3) == king.position or king.position == (0,3)) and (1, 1) in moves and y_pawn == 0:
             return "King", (1, 1)
 
+        # king should go up
+        if (y_pawn == 0 or y_pawn == 7) and abs(y_pawn - y_king) <= 1 and 0 < x_b_king < x_king and (x_king - 1, y_king) in moves:
+            return "King", (x_king - 1, y_king)
+        
         # promote the pawn unless the black king capture the oposition
         # the pawn not in the edge and y_pawn != 0 and y_pawn != 7
         if pawn_statement == "not defended, can move":
             if not (x_king - 2, y_king) in king_moves:
+                if y_pawn == y_king: # the same column
+                    # should take the opposition
+                    if y_king == 0 and (x_b_king, y_b_king - 2) in moves:
+                        return "King", (x_b_king, y_b_king - 2)
+                    if y_king == 7 and (x_b_king, y_b_king + 2) in moves:
+                        return "King", (x_b_king, y_b_king + 2)
                 # and king not in the corner
                 if not (x_b_king == 0 and (y_b_king == 0 or y_b_king == 7)):
                     return "Pawn", pawn_best_move
                 # the king in the corner
-                elif abs(x_b_king - x_king) == 1 and (x_pawn - 1, y_pawn) in moves:
-                    return "King", (x_pawn - 1, y_pawn)
+                else:
+                    if y_b_king == y_king and x_king == 2 and abs(y_king - y_pawn) == 1 and pawn_best_move:
+                        return "Pawn", pawn_best_move
+                    if abs(x_b_king - x_king) == 1 and (x_pawn - 1, y_pawn) in moves:
+                        return "King", (x_pawn - 1, y_pawn)
             
         # If the pawn is defended, and the black king far away, promote the pawn unless the pawn above the king
         if pawn_statement == "defended, can move":
@@ -304,6 +317,10 @@ class King(Piece):
 
             # If the pawn still defended after the move, and the black king in row below, promote the pawn.
             if (abs(pawn_best_move[0] - x_king) <= 1 and abs(pawn_best_move[1] - y_king) <= 1) and (x_b_king >= x_pawn or (x_b_king <= 1 and x_pawn <= 2)):
+                return "Pawn", pawn_best_move
+            
+            # if the black king captured the oposition and he in the first row, promote the pawn
+            if x_b_king == 0 and x_king == 2 and y_king == y_b_king and pawn_best_move:
                 return "Pawn", pawn_best_move
         
         if pawn_statement == "black king in the corner, king should move back":
@@ -317,9 +334,8 @@ class King(Piece):
         if abs(y_pawn - y_b_king) == 2 and x_pawn == x_b_king and y_king == (y_pawn + y_b_king)/2 and (x_pawn + 1, y_pawn) in moves:
             return "King", (x_pawn + 1, y_pawn)
         
-        # king should go up
-        if (y_pawn == 0 or y_pawn == 7) and abs(y_pawn - y_king) <= 1 and 0 < x_b_king < x_king and (x_king - 1, y_king) in moves:
-            return "King", (x_king - 1, y_king)
+        if abs(y_pawn - y_b_king) == 3 and x_pawn == x_b_king and abs(x_pawn - x_king) == 2 and (x_pawn + 1, y_pawn) in moves:
+            return "King", (x_pawn + 1, y_pawn)
 
         distance_from_pawn_side = min(abs(x_king - (x_pawn-1)) + abs(y_king - (y_pawn-1)), abs(x_king - (x_pawn-1)) + abs(y_king - (y_pawn+1)))
 
@@ -333,6 +349,8 @@ class King(Piece):
             
             score[move] = min(abs(x - (x_pawn-1)) + abs(y - y_pawn - 1), abs(x - (x_pawn-1)) + abs(y - y_pawn + 1))
 
+            if x_pawn == 6:
+                score[move] = min(abs(x - (x_pawn-2)) + abs(y - (y_pawn-1)), abs(x - (x_pawn-2)) + abs(y - (y_pawn + 1)))
 
             if abs(x - x_pawn) <= 1 and abs(y - y_pawn) <= 1 and x_king == x_pawn:
                 score[move] -= pawn_protected

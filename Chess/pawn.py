@@ -203,11 +203,16 @@ class Pawn(Piece):
             # not next to the king and can't move next to the king
             # the pawn should move on if it in the columns next to the king, and the white king is above the black king (or in the same row) and the black king can't capture the pawn
             elif abs(y_pawn - y_w_king) == 1 and x_b_king >= x_w_king:
-                if abs(x_pawn - x_b_king) == 2 and abs(x_b_king - x_w_king) == 2 and abs(y_b_king - y_pawn) <=2:
+                if abs(x_pawn - x_b_king) == 2 and abs(x_b_king - x_w_king) == 2 and abs(y_b_king - y_pawn) <= 2:
                     return "shouldn't move, can capture by the king", moves[0]
-                if (y_w_king == 7 or y_w_king == 0) and abs(y_pawn - y_w_king):
+                # king in the edge
+                if (y_w_king == 7 or y_w_king == 0):
                     return "shouldn't move, can capture by the king", moves[0]
-                return "must move on", moves[0]
+                if abs(y_pawn - y_b_king) == 1 and abs(x_w_king - x_b_king) == 1:
+                    return "shouldn't move, can capture by the king", moves[0]
+                if abs(y_pawn - y_b_king) == 2 and abs(x_w_king - x_b_king) == 1 and x_w_king == 0 and x_pawn >= 5:
+                    return "shouldn't move, can capture by the king", moves[0]
+                return "must move on", moves[-1]
             
             # if the white king between the black king and the pawn, the pawn should move on
             elif (y_pawn < y_w_king - 1 and y_w_king + 1 < y_b_king) or (y_pawn > y_w_king + 1 and y_w_king - 1 > y_b_king):

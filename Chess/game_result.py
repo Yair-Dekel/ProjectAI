@@ -18,7 +18,7 @@ with chess.syzygy.open_tablebase(tablebase_path) as tablebase:
 
 print("WDL:", wdl)
 
-fen = "8/8/8/8/4k2K/8/7P/8 w - - 0 1"
+fen = "k7/8/K7/8/1P6/8/8/8 w - - 0 1"
 
 print(fen)
 # Run the King vs Pawn vs King game
